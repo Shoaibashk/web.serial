@@ -2,6 +2,7 @@ const CACHE_VERSION = "web-serial-cache-v1";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
+  "/manifest.json",
   "/js/app.js",
   "/js/config.js",
   "/js/input-handler.js",
@@ -9,6 +10,7 @@ const STATIC_ASSETS = [
   "/js/terminal-renderer.js",
   "/styles/main.css",
   "/styles/themes.css",
+  "/icons/db89.png",
   "https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=Poppins:wght@400;500;600;700&display=swap",
 ];
 

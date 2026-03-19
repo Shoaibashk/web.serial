@@ -12,7 +12,7 @@
   "screenshots": [],
   "icons": [
     {
-      "src": "icons/db89.png",
+      "src": "/icons/db89.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
@@ -26,7 +26,7 @@
       "url": "/?action=connect",
       "icons": [
         {
-          "src": "icons/db89.png",
+          "src": "/icons/db89.png",
           "sizes": "512x512",
           "type": "image/png"
         }
