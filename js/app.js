@@ -297,20 +297,24 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    ui.btnInstallPwa.classList.remove("hidden");
-  });
-
-  ui.btnInstallPwa.addEventListener("click", async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") {
-        window.Terminal.print("App installed successfully!", "system");
-      }
-      deferredPrompt = null;
-      ui.btnInstallPwa.classList.add("hidden");
+    if (ui.btnInstallPwa) {
+      ui.btnInstallPwa.classList.remove("hidden");
     }
   });
+
+  if (ui.btnInstallPwa) {
+    ui.btnInstallPwa.addEventListener("click", async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === "accepted") {
+          window.Terminal.print("App installed successfully!", "system");
+        }
+        deferredPrompt = null;
+        ui.btnInstallPwa.classList.add("hidden");
+      }
+    });
+  }
 
   window.addEventListener("appinstalled", () => {
     window.Terminal.print("App installed successfully!", "system");
