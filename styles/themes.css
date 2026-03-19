@@ -1,0 +1,53 @@
+/* Anthropic Brand Color Palette */
+:root {
+    /* Primary/Neutral Colors */
+    --bg-base: #faf9f5;
+    --bg-surface: #ffffff;
+    --bg-panel: #f0ede3;
+    --border-color: #e8e6dc;
+    --text-main: #141413;
+    --text-muted: #b0aea5;
+
+    /* Accent Colors */
+    --accent-primary: #d97757;
+    --accent-primary-hover: #c56340;
+    --accent-danger: #d97757;
+    --accent-danger-hover: #c56340;
+
+    /* Status Colors */
+    --status-online: #788c5d;
+    --status-offline: #b0aea5;
+    --status-error: #d97757;
+
+    /* Secondary Accents */
+    --accent-secondary: #6a9bcc;
+    --accent-tertiary: #788c5d;
+
+    /* Terminal/Code Colors */
+    --term-bg: #1a1918;
+    --term-text: #e8e6dc;
+    --term-prompt: #d97757;
+    --term-sys: #b0aea5;
+    --term-err: #d97757;
+}
+
+/* Base Terminal Colors (used for ANSI rendering) */
+:root {
+    --ansi-black: #000000;
+    --ansi-red: #cd3131;
+    --ansi-green: #0dbc79;
+    --ansi-yellow: #e5e510;
+    --ansi-blue: #2472c8;
+    --ansi-magenta: #bc3fbc;
+    --ansi-cyan: #11a8cd;
+    --ansi-white: #e5e5e5;
+
+    --ansi-bright-black: #666666;
+    --ansi-bright-red: #f14c4c;
+    --ansi-bright-green: #23d18b;
+    --ansi-bright-yellow: #f5f543;
+    --ansi-bright-blue: #3b8eea;
+    --ansi-bright-magenta: #d670d6;
+    --ansi-bright-cyan: #29b8db;
+    --ansi-bright-white: #e5e5e5;
+}

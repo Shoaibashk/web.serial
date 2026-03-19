@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Serial Terminal</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/themes.css" />
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <div id="unsupported-banner" class="hidden">
+      Sorry, your browser does not support the Web Serial API. Please use
+      Chrome, Edge, or Opera on a desktop.
+    </div>
+
+    <div class="app-container">
+      <!-- Header -->
+      <header class="app-header">
+        <div class="brand">
+          <h1>Web Serial Terminal</h1>
+        </div>
+        <div class="header-actions">
+          <button id="btn-settings-toggle" title="Toggle Settings">
+            ⚙️ Settings
+          </button>
+        </div>
+      </header>
+
+      <!-- Connection Bar -->
+      <section class="connection-bar">
+        <div class="connection-controls">
+          <button id="btn-connect" class="primary">Connect</button>
+          <button id="btn-disconnect" class="danger hidden">Disconnect</button>
+          <span class="divider"></span>
+          <div class="setting-group">
+            <label for="baud-rate">Baud:</label>
+            <select id="baud-rate">
+              <option value="9600">9600</option>
+              <option value="19200">19200</option>
+              <option value="38400">38400</option>
+              <option value="57600">57600</option>
+              <option value="115200" selected>115200</option>
+            </select>
+          </div>
+        </div>
+        <div class="connection-status">
+          <span id="status-indicator" class="status-dot offline"></span>
+          <span id="status-text">Disconnected</span>
+          <span class="divider"></span>
+          <button
+            id="btn-commands-toggle"
+            class="secondary"
+            title="Toggle Quick Commands"
+          >
+            📋 Commands
+          </button>
+        </div>
+      </section>
+
+      <!-- Main Body -->
+      <div class="app-body">
+        <!-- Left Command Panel (Hidden by default or togglable) -->
+        <aside id="panel-commands" class="side-panel hidden">
+          <div class="panel-header">
+            <h3>Quick Commands</h3>
+            <button
+              id="btn-add-command"
+              class="icon-button"
+              title="Add Command"
+            >
+              ➕
+            </button>
+          </div>
+          <div id="commands-list" class="commands-list">
+            <!-- Commands inserted here via JS -->
+          </div>
+        </aside>
+
+        <!-- Terminal Area -->
+        <main class="terminal-area">
+          <div id="terminal-output" class="terminal-output">
+            <div class="terminal-content"></div>
+          </div>
+          <div class="terminal-stats">
+            <span>RX: <span id="rx-bytes-terminal">0</span> bytes</span>
+            <span>TX: <span id="tx-bytes-terminal">0</span> bytes</span>
+          </div>
+
+          <!-- Modern Mode Input -->
+          <div id="modern-input-area" class="input-area modern-only">
+            <input
+              type="text"
+              id="terminal-input"
+              placeholder="Type a command (↑/↓ for history)..."
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button id="btn-send" class="primary">Send</button>
+            <button id="btn-clear" class="secondary" title="Clear Terminal">
+              🗑️
+            </button>
+          </div>
+        </main>
+
+        <!-- Right Settings Panel -->
+        <aside id="panel-settings" class="side-panel hidden">
+          <div class="panel-header">
+            <h3>Settings</h3>
+            <button id="btn-close-settings" class="icon-button">X</button>
+          </div>
+
+          <div class="settings-form">
+            <h4>Serial Configuration</h4>
+            <div class="form-group">
+              <label for="data-bits">Data Bits</label>
+              <select id="data-bits">
+                <option value="7">7</option>
+                <option value="8" selected>8</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="stop-bits">Stop Bits</label>
+              <select id="stop-bits">
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="parity">Parity</label>
+              <select id="parity">
+                <option value="none" selected>None</option>
+                <option value="even">Even</option>
+                <option value="odd">Odd</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="flow-control">Flow Control</label>
+              <select id="flow-control">
+                <option value="none" selected>None</option>
+                <option value="hardware">Hardware</option>
+              </select>
+            </div>
+
+            <h4>Terminal Behavior</h4>
+            <div class="form-group">
+              <label for="terminal-mode">Mode</label>
+              <select id="terminal-mode">
+                <option value="modern" selected>Modern</option>
+                <option value="traditional">Traditional</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="line-ending">Line Ending (TX)</label>
+              <select id="line-ending">
+                <option value="\n">LF (\n)</option>
+                <option value="\r\n" selected>CR+LF (\r\n)</option>
+                <option value="\r">CR (\r)</option>
+                <option value="">None</option>
+              </select>
+            </div>
+            <div class="form-checkbox">
+              <input type="checkbox" id="local-echo" checked />
+              <label for="local-echo">Local Echo</label>
+            </div>
+
+            <div class="control-actions">
+              <button id="btn-send-ctrl-c" class="secondary">
+                Send Ctrl+C
+              </button>
+              <button id="btn-send-ctrl-z" class="secondary">
+                Send Ctrl+Z
+              </button>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <div class="port-info" id="port-info">No Device</div>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/serial-manager.js"></script>
+    <script src="js/terminal-renderer.js"></script>
+    <script src="js/input-handler.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
