@@ -12,12 +12,13 @@
     <link rel="stylesheet" href="styles/main.css" />
 
     <!-- PWA Manifest and Meta Tags -->
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#1a1a1a" />
     <meta
       name="description"
       content="A modern, browser-based terminal interface for serial communication using the Web Serial API"
     />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
@@ -26,31 +27,31 @@
     <meta name="apple-mobile-web-app-title" content="Serial Terminal" />
 
     <!-- Favicon Links -->
-    <link rel="icon" type="image/x-icon" href="/icons/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="/icons/favicon-16x16.png"
+      href="icons/favicon-16x16.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="/icons/favicon-32x32.png"
+      href="icons/favicon-32x32.png"
     />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <link
       rel="icon"
       type="image/png"
       sizes="192x192"
-      href="/icons/android-chrome-192x192.png"
+      href="icons/android-chrome-192x192.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="512x512"
-      href="/icons/android-chrome-512x512.png"
+      href="icons/android-chrome-512x512.png"
     />
   </head>
   <body>
@@ -242,7 +243,7 @@
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           navigator.serviceWorker
-            .register("/service-worker.js")
+            .register("service-worker.js")
             .then((registration) => {
               console.log(
                 "[PWA] Service Worker registered successfully:",

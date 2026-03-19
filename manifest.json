@@ -2,8 +2,8 @@
   "name": "Web Serial Terminal",
   "short_name": "Serial Terminal",
   "description": "A modern, browser-based terminal interface for serial communication using the Web Serial API",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#1a1a1a",
@@ -12,25 +12,25 @@
   "screenshots": [],
   "icons": [
     {
-      "src": "/icons/favicon-16x16.png",
+      "src": "icons/favicon-16x16.png",
       "sizes": "16x16",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/favicon-32x32.png",
+      "src": "icons/favicon-32x32.png",
       "sizes": "32x32",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/android-chrome-192x192.png",
+      "src": "icons/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/android-chrome-512x512.png",
+      "src": "icons/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
@@ -41,15 +41,15 @@
       "name": "Connect Device",
       "short_name": "Connect",
       "description": "Quick access to connect a serial device",
-      "url": "/?action=connect",
+      "url": "./?action=connect",
       "icons": [
         {
-          "src": "/icons/android-chrome-192x192.png",
+          "src": "icons/android-chrome-192x192.png",
           "sizes": "192x192",
           "type": "image/png"
         },
         {
-          "src": "/icons/android-chrome-512x512.png",
+          "src": "icons/android-chrome-512x512.png",
           "sizes": "512x512",
           "type": "image/png"
         }
