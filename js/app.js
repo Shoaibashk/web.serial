@@ -44,6 +44,9 @@ document.addEventListener("DOMContentLoaded", () => {
     btnAddCommand: document.getElementById("btn-add-command"),
     btnCommandsToggle: document.getElementById("btn-commands-toggle"),
 
+    // PWA Install
+    btnInstallPwa: document.getElementById("btn-install-pwa"),
+
     // Settings Elements
     dataBits: document.getElementById("data-bits"),
     stopBits: document.getElementById("stop-bits"),
@@ -287,6 +290,30 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("serial:stats", (e) => {
     ui.rxBytes.innerText = e.detail.rx;
     ui.txBytes.innerText = e.detail.tx;
+  });
+
+  // PWA Install Handler
+  let deferredPrompt;
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    ui.btnInstallPwa.classList.remove("hidden");
+  });
+
+  ui.btnInstallPwa.addEventListener("click", async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        window.Terminal.print("App installed successfully!", "system");
+      }
+      deferredPrompt = null;
+      ui.btnInstallPwa.classList.add("hidden");
+    }
+  });
+
+  window.addEventListener("appinstalled", () => {
+    window.Terminal.print("App installed successfully!", "system");
   });
 
   // Init

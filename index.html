@@ -10,6 +10,21 @@
     />
     <link rel="stylesheet" href="styles/themes.css" />
     <link rel="stylesheet" href="styles/main.css" />
+
+    <!-- PWA Manifest and Meta Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#1a1a1a" />
+    <meta
+      name="description"
+      content="A modern, browser-based terminal interface for serial communication using the Web Serial API"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Serial Terminal" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg" />
   </head>
   <body>
     <div id="unsupported-banner" class="hidden">
@@ -24,6 +39,9 @@
           <h1>Web Serial Terminal</h1>
         </div>
         <div class="header-actions">
+          <!-- <button id="btn-install-pwa" title="Install App" class="hidden">
+            ⬇️ Install
+          </button> -->
           <button id="btn-settings-toggle" title="Toggle Settings">
             ⚙️ Settings
           </button>
@@ -191,5 +209,24 @@
     <script src="js/terminal-renderer.js"></script>
     <script src="js/input-handler.js"></script>
     <script src="js/app.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/service-worker.js")
+            .then((registration) => {
+              console.log(
+                "[PWA] Service Worker registered successfully:",
+                registration,
+              );
+            })
+            .catch((error) => {
+              console.warn("[PWA] Service Worker registration failed:", error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
