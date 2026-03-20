@@ -1,4 +1,5 @@
-const CACHE_VERSION = "web-serial-cache-v1";
+const CACHE_VERSION =
+  "web-serial-cache-" + new Date().toISOString().split("T")[0]; // Auto-invalidates daily
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +7,7 @@ const STATIC_ASSETS = [
   "./js/app.js",
   "./js/config.js",
   "./js/input-handler.js",
+  "./js/plotter.js",
   "./js/serial-manager.js",
   "./js/terminal-renderer.js",
   "./styles/main.css",
@@ -56,8 +58,8 @@ self.addEventListener("activate", (event) => {
 });
 
 /**
- * Fetch event: Use network-first for HTML (get updates),
- * cache-first for static assets (faster)
+ * Fetch event: Use network-first for HTML and static assets (get updates),
+ * fall back to cache only if offline
  */
 self.addEventListener("fetch", (event) => {
   const { request } = event;
@@ -100,28 +102,23 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Cache-first for static assets (CSS, JS, icons)
+  // Network-first for static assets (JS, CSS, icons)
   event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) {
-        return cached;
-      }
-      return fetch(request)
-        .then((response) => {
-          // Cache successful responses
-          if (response && response.status === 200) {
-            const cloned = response.clone();
-            caches.open(CACHE_VERSION).then((cache) => {
-              cache.put(request, cloned);
-            });
-          }
-          return response;
-        })
-        .catch((err) => {
-          console.warn("[Service Worker] Fetch failed for:", request.url, err);
-          return new Response("Offline", { status: 503 });
-        });
-    }),
+    fetch(request)
+      .then((response) => {
+        // Cache successful responses for offline fallback
+        if (response && response.status === 200) {
+          const cloned = response.clone();
+          caches.open(CACHE_VERSION).then((cache) => {
+            cache.put(request, cloned);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        // Fall back to cache if network fails
+        return caches.match(request);
+      }),
   );
 });
 
