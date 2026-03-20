@@ -4,7 +4,8 @@
     --bg-base: #faf9f5;
     --bg-surface: #ffffff;
     --bg-panel: #f0ede3;
-    --border-color: #e8e6dc;
+    --border-color: #b0aea5;
+    /*#e8e6dc;*/
     --text-main: #141413;
     --text-muted: #b0aea5;
 
@@ -20,8 +21,10 @@
     --status-error: #d97757;
 
     /* Secondary Accents */
-    --accent-secondary: #6a9bcc;
-    --accent-tertiary: #788c5d;
+    /* --accent-secondary: #6a9bcc;
+    --accent-tertiary: #788c5d; */
+    --accent-run: #21b8b1;
+    --accent-run-hover: #1ca6a0;
 
     /* Terminal/Code Colors */
     --term-bg: #1a1918;
@@ -29,6 +32,56 @@
     --term-prompt: #d97757;
     --term-sys: #b0aea5;
     --term-err: #d97757;
+
+    /* Plotter Colors (light theme) */
+    --plotter-bg: #faf9f5;
+    --plotter-grid: rgba(5, 5, 5, 0.15);
+    --plotter-axis: rgba(80, 70, 60, 0.35);
+    --plotter-label: #6b6860;
+    --plotter-crosshair: rgba(0, 0, 0, 0.25);
+    --plotter-tooltip-bg: rgba(255, 252, 245, 0.96);
+    --plotter-tooltip-border: rgba(80, 70, 60, 0.25);
+    --plotter-tooltip-text: #141413;
+    --plotter-dot-stroke: rgba(240, 237, 227, 0.95);
+
+    /* Plotter Toolbar (light theme) */
+    --plotter-toolbar-bg: #f0ede3;
+    --plotter-toolbar-text: #6b6860;
+    --plotter-toolbar-item-text: #6b6860;
+    --plotter-toolbar-border: rgba(80, 70, 60, 0.08);
+    --plotter-canvas-wrap-bg: #f0ede3;
+}
+
+[data-theme="dark"] {
+    /* Primary/Neutral Colors */
+    --bg-base: #1a1918;
+    --bg-surface: #242221;
+    --bg-panel: #2a2826;
+    --border-color: #3a3836;
+    --text-main: #e8e6dc;
+    --text-muted: #b0aea5;
+
+    /* Terminal/Code Colors */
+    --term-bg: #0d0d0c;
+    --term-text: #e8e6dc;
+
+    /* Plotter Colors (dark theme) */
+    --plotter-bg: #1a1918;
+    --plotter-grid: rgba(205, 220, 227, 0.14);
+    --plotter-axis: rgba(205, 220, 227, 0.3);
+    --plotter-label: #9eb0b6;
+    --plotter-crosshair: rgba(255, 255, 255, 0.28);
+    --plotter-tooltip-bg: rgba(8, 12, 16, 0.92);
+    --plotter-tooltip-border: rgba(205, 220, 227, 0.18);
+    --plotter-tooltip-text: #cfdbe1;
+    --plotter-dot-stroke: rgba(15, 23, 30, 0.95);
+
+    /* Plotter Toolbar (dark theme) */
+    --plotter-toolbar-bg: #2a2826;
+    --plotter-toolbar-text: #dde7e9;
+    --plotter-toolbar-item-text: #d4dcde;
+    --plotter-toolbar-border: rgba(255, 255, 255, 0.08);
+    --plotter-canvas-wrap-bg: #0f171e;
 }
 
 /* Base Terminal Colors (used for ANSI rendering) */

@@ -27,6 +27,10 @@ document.addEventListener("DOMContentLoaded", () => {
     panelSettings: document.getElementById("panel-settings"),
     panelCommands: document.getElementById("panel-commands"),
     btnCloseSettings: document.getElementById("btn-close-settings"),
+    tabTerminal: document.getElementById("tab-terminal"),
+    tabPlotter: document.getElementById("tab-plotter"),
+    terminalView: document.getElementById("terminal-view"),
+    plotterView: document.getElementById("plotter-view"),
 
     btnConnect: document.getElementById("btn-connect"),
     btnDisconnect: document.getElementById("btn-disconnect"),
@@ -61,6 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Extra buttons
     btnSendCtrlC: document.getElementById("btn-send-ctrl-c"),
     btnSendCtrlZ: document.getElementById("btn-send-ctrl-z"),
+
+    // Theme
+    btnThemeToggle: document.getElementById("btn-theme-toggle"),
   };
 
   // Load initial state from config
@@ -84,10 +91,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderCommands();
 
+    // Apply saved theme
+    const savedTheme = window.Config.get("theme") || "dark";
+    applyTheme(savedTheme);
+
     window.Terminal.print(
       "Web Serial Terminal initialized. Ready to connect.",
       "system",
     );
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    if (ui.btnThemeToggle) {
+      const sunIcon = ui.btnThemeToggle.querySelector(".sun-icon");
+      const moonIcon = ui.btnThemeToggle.querySelector(".moon-icon");
+      if (theme === "dark") {
+        // Dark mode: show sun icon
+        if (sunIcon) sunIcon.classList.remove("hidden");
+        if (moonIcon) moonIcon.classList.add("hidden");
+        ui.btnThemeToggle.title = "Switch to light theme";
+      } else {
+        // Light mode: show moon icon
+        if (sunIcon) sunIcon.classList.add("hidden");
+        if (moonIcon) moonIcon.classList.remove("hidden");
+        ui.btnThemeToggle.title = "Switch to dark theme";
+      }
+    }
+    if (window.Plotter) {
+      window.Plotter.isDirty = true;
+    }
   }
 
   function togglePanel(panelName, element) {
@@ -99,6 +132,23 @@ document.addEventListener("DOMContentLoaded", () => {
       element.classList.remove("hidden");
     } else {
       element.classList.add("hidden");
+    }
+  }
+
+  function switchOutputView(view) {
+    const isPlotter = view === "plotter";
+
+    ui.terminalView.classList.toggle("hidden", isPlotter);
+    ui.plotterView.classList.toggle("hidden", !isPlotter);
+
+    ui.tabTerminal.classList.toggle("active", !isPlotter);
+    ui.tabPlotter.classList.toggle("active", isPlotter);
+
+    ui.tabTerminal.setAttribute("aria-selected", String(!isPlotter));
+    ui.tabPlotter.setAttribute("aria-selected", String(isPlotter));
+
+    if (isPlotter && window.Plotter) {
+      window.Plotter.resize();
     }
   }
 
@@ -125,7 +175,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const delBtn = document.createElement("button");
       delBtn.className = "icon-button";
-      delBtn.innerText = "🗑️";
+      delBtn.innerHTML =
+        '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1C5.22386 1 5 1.22386 5 1.5C5 1.77614 5.22386 2 5.5 2H9.5C9.77614 2 10 1.77614 10 1.5C10 1.22386 9.77614 1 9.5 1H5.5ZM3 3.5C3 3.22386 3.22386 3 3.5 3H5H10H11.5C11.7761 3 12 3.22386 12 3.5C12 3.77614 11.7761 4 11.5 4H11V12C11 12.5523 10.5523 13 10 13H5C4.44772 13 4 12.5523 4 12V4L3.5 4C3.22386 4 3 3.77614 3 3.5ZM5 4H10V12H5V4Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>';
       delBtn.title = "Remove";
       delBtn.onclick = () => {
         window.Config.removeCommand(cmd.id);
@@ -149,6 +200,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   ui.btnCommandsToggle.addEventListener("click", () => {
     togglePanel("commands", ui.panelCommands);
+  });
+
+  ui.tabTerminal.addEventListener("click", () => {
+    switchOutputView("terminal");
+  });
+
+  ui.tabPlotter.addEventListener("click", () => {
+    switchOutputView("plotter");
   });
 
   // Add command prompt
@@ -190,6 +249,15 @@ document.addEventListener("DOMContentLoaded", () => {
   ui.localEcho.addEventListener("change", (e) => {
     window.Config.set("localEcho", e.target.checked);
   });
+
+  if (ui.btnThemeToggle) {
+    ui.btnThemeToggle.addEventListener("click", () => {
+      const current = window.Config.get("theme") || "dark";
+      const next = current === "dark" ? "light" : "dark";
+      window.Config.set("theme", next);
+      applyTheme(next);
+    });
+  }
 
   // Serial Connection Handlers
   ui.btnConnect.addEventListener("click", async () => {
@@ -322,4 +390,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Init
   initializeUI();
+  switchOutputView("terminal");
 });
