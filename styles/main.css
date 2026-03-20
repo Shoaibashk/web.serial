@@ -45,10 +45,44 @@ body {
     padding: 0.5rem 1rem;
 }
 
+/* Brand (header title + author) */
+.brand {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+}
+
+.brand-sub {
+    font-size: 0.75rem;
+    line-height: 1;
+    color: var(--text-main);
+}
+
+.brand-sub a {
+    color: var(--accent-primary);
+    text-decoration: none;
+}
+
 .brand h1 {
     font-family: 'Poppins', Arial, sans-serif;
     font-weight: 600;
-    font-size: 1.25rem;
+    margin: 0;
+    font-size: 1.50rem;
+}
+
+.brand h1 a {
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+.brand h1 a:hover,
+.brand h1 a:focus {
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+.brand h1 a:visited {
+    color: var(--text-main);
 }
 
 .header-actions {
