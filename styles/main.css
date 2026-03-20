@@ -168,7 +168,7 @@ input:disabled {
 }
 
 select {
-    font-family: 'Lora', Georgia, serif;
+    font-family: 'Inter', 'Poppins', Arial, sans-serif;
     padding: 0.25rem 0.5rem;
     background-color: var(--bg-surface);
     color: var(--text-main);
@@ -370,7 +370,7 @@ select {
 
 .view-tabs {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     background-color: var(--bg-surface);
     border-bottom: 1px solid var(--border-color);
     flex-shrink: 0;
@@ -385,6 +385,7 @@ select {
     padding: 0.65rem 1rem;
     font-size: 0.85rem;
     letter-spacing: 0.02em;
+    margin-bottom: -1px;
 }
 
 .view-tab:hover {
