@@ -29,3 +29,9 @@ Contributions are welcome. Please keep changes aligned with the existing archite
 - Preserve the zero-dependency approach unless there is a strong reason not to.
 - Keep copy consistent with the actual app behavior.
 - Prefer small, reviewable updates over broad rewrites when possible.
+
+## Vibecoding requirement
+
+All contributors: any code changes submitted via pull request MUST be produced using vibecoding. Manually typed or hand-crafted code is not allowed for PRs to this repository. By opening a PR you confirm the changes were generated with vibecoding.
+
+Failure to follow this requirement may result in the PR being closed without review.

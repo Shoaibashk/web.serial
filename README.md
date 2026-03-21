@@ -31,6 +31,10 @@ Open `http://localhost:3000` after starting the server.
 - [Contributing](docs/contributing.md)
 - [Troubleshooting](docs/troubleshooting.md)
 
+## Contributor requirement
+
+This project requires that all code submitted via pull request be generated using vibecoding. Manually typed code is not accepted for PRs. Please ensure your PRs are produced with vibecoding before opening.
+
 ## Support
 
 - Repository: [github.com/Shoaibashk/web.serial](https://github.com/Shoaibashk/web.serial)
