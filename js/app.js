@@ -38,10 +38,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     statusIndicator: document.getElementById("status-indicator"),
     statusText: document.getElementById("status-text"),
-    portInfo: document.getElementById("port-info"),
+    portInfo: document.getElementById("footer-port-info"),
 
-    rxBytes: document.getElementById("rx-bytes-terminal"),
-    txBytes: document.getElementById("tx-bytes-terminal"),
+    rxBytes: document.getElementById("footer-rx-bytes"),
+    txBytes: document.getElementById("footer-tx-bytes"),
 
     // Commands
     commandsList: document.getElementById("commands-list"),
@@ -276,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ui.btnDisconnect.classList.remove("hidden");
 
       ui.statusIndicator.className = "status-dot online";
-      ui.statusText.innerText = `Connected (${options.baudRate})`;
+      ui.statusText.innerText = `Serial Port @ ${options.baudRate}`; // updated by serial:connected
 
       window.Terminal.clear();
       window.Terminal.print(
@@ -346,13 +346,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("serial:connected", (e) => {
     const info = e.detail || {};
+    const baudRate = window.Config.get("baudRate");
     const vid = info.usbVendorId
       ? info.usbVendorId.toString(16).padStart(4, "0")
-      : "Unknown";
+      : null;
     const pid = info.usbProductId
       ? info.usbProductId.toString(16).padStart(4, "0")
-      : "Unknown";
-    ui.portInfo.innerText = `VID:${vid} PID:${pid}`;
+      : null;
+
+    const deviceLabel = vid ? `USB Serial (VID:${vid})` : "Serial Port";
+    console.info("Connected device:", {
+      deviceLabel,
+      baudRate,
+      usbVendorId: vid,
+      usbProductId: pid,
+      rawInfo: info,
+    });
+    ui.statusText.innerText = deviceLabel;
+    ui.portInfo.innerText =
+      vid && pid ? `VID:${vid}  PID:${pid}` : "Serial Device";
   });
 
   window.addEventListener("serial:stats", (e) => {

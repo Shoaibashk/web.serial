@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Web Serial Terminal</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles/themes.css" />
@@ -69,12 +69,7 @@
               >Web.Serial</a
             >
           </h1>
-          <span class="brand-sub"
-            >By
-            <a href="https://github.com/shoaibashk" target="_blank"
-              >Shoaibashk</a
-            >
-          </span>
+          <!-- author credit moved to footer -->
         </div>
         <div class="header-actions">
           <!-- <button id="btn-install-pwa" title="Install App" class="hidden">
@@ -140,14 +135,12 @@
         </div>
       </header>
 
-      <!-- Connection Bar -->
+      <!-- Connection Bar (Request Bar) -->
       <section class="connection-bar">
-        <div class="connection-controls">
-          <button id="btn-connect" class="primary">Connect</button>
-          <button id="btn-disconnect" class="danger hidden">Disconnect</button>
-          <span class="divider"></span>
-          <div class="setting-group">
-            <label for="baud-rate">Baud:</label>
+        <div class="request-url-bar">
+          <span class="method-badge">SERIAL</span>
+          <div class="baud-group">
+            <span class="baud-label">Baud</span>
             <select id="baud-rate">
               <option value="9600">9600</option>
               <option value="19200">19200</option>
@@ -156,11 +149,18 @@
               <option value="115200" selected>115200</option>
             </select>
           </div>
+          <div class="connection-status-inline">
+            <span id="status-indicator" class="status-dot offline"></span>
+            <span id="status-text">Disconnected</span>
+          </div>
+          <div class="request-actions">
+            <button id="btn-disconnect" class="danger hidden">
+              Disconnect
+            </button>
+            <button id="btn-connect" class="primary send-btn">Connect</button>
+          </div>
         </div>
-        <div class="connection-status">
-          <span id="status-indicator" class="status-dot offline"></span>
-          <span id="status-text">Disconnected</span>
-          <span class="divider"></span>
+        <div class="navbar-secondary">
           <button
             id="btn-commands-toggle"
             class="secondary header-text-button"
@@ -188,7 +188,7 @@
       <!-- Main Body -->
       <div class="app-body">
         <!-- Left Command Panel (Hidden by default or togglable) -->
-        <aside id="panel-commands" class="side-panel hidden">
+        <aside id="panel-commands" class="side-panel">
           <div class="panel-header">
             <h3>Quick Commands</h3>
             <button
@@ -239,12 +239,10 @@
           </div>
 
           <div id="terminal-view" class="output-view">
+            <!-- <div class="response-meta"> -->
+            <!-- </div> -->
             <div id="terminal-output" class="terminal-output">
               <div class="terminal-content"></div>
-            </div>
-            <div class="terminal-stats">
-              <span>RX: <span id="rx-bytes-terminal">0</span> bytes</span>
-              <span>TX: <span id="tx-bytes-terminal">0</span> bytes</span>
             </div>
 
             <!-- Modern Mode Input -->
@@ -410,9 +408,26 @@
         </aside>
       </div>
 
-      <!-- Footer -->
+      <!-- Status Bar -->
       <footer class="app-footer">
-        <div class="port-info" id="port-info">No Device</div>
+        <span
+          >By
+          <a
+            href="https://github.com/shoaibashk"
+            target="_blank"
+            style="text-decoration: none; color: var(--accent-primary)"
+            >Shoaibashk</a
+          ></span
+        >
+        <span id="footer-port-info" class="footer-port-info">No Device</span>
+        <div class="footer-stats">
+          <span class="stat-item"
+            >RX: <span id="footer-rx-bytes">0</span> B</span
+          >
+          <span class="stat-item"
+            >TX: <span id="footer-tx-bytes">0</span> B</span
+          >
+        </div>
       </footer>
     </div>
 

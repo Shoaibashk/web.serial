@@ -1,3 +1,9 @@
+/* =====================================================
+   Web Serial Terminal — Main Styles
+   Postman-inspired developer tool aesthetic
+   Font: IBM Plex Sans (UI) + IBM Plex Mono (terminal)
+   ===================================================== */
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -6,56 +12,97 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+:root {
+    --font-ui: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'Consolas', 'Courier New', monospace;
+    --radius-sm: 3px;
+    --radius-md: 4px;
+    --radius-lg: 6px;
+    --transition: 150ms ease;
+}
+
 body {
-    font-family: 'Poppins', Arial, sans-serif;
+    font-family: var(--font-ui);
     font-weight: 400;
+    font-size: 13px;
     background-color: var(--bg-base);
     color: var(--text-main);
     height: 100vh;
     overflow: hidden;
+    line-height: 1.5;
 }
 
 .hidden {
     display: none !important;
 }
 
-/* Unsupported Banner */
+/* === UNSUPPORTED BANNER === */
 #unsupported-banner {
     background-color: var(--accent-danger);
     color: white;
     text-align: center;
-    padding: 1rem;
-    font-weight: bold;
+    padding: 0.625rem 1rem;
+    font-weight: 600;
+    font-size: 0.8125rem;
 }
 
-/* Base App Layout */
+/* === APP CONTAINER === */
 .app-container {
     display: flex;
     flex-direction: column;
     height: 100vh;
 }
 
-/* Header */
+/* ==========================================
+   HEADER
+   ========================================== */
 .app-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--bg-surface);
+    background-color: var(--bg-sidebar);
     border-bottom: 1px solid var(--border-color);
-    padding: 0.5rem 1rem;
+    padding: 0 1rem;
+    height: 48px;
+    flex-shrink: 0;
+    gap: 0.5rem;
 }
 
-/* Brand (header title + author) */
 .brand {
     display: flex;
-    align-items: baseline;
-    gap: 0.3rem;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.brand h1 {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.brand h1 a {
+    color: var(--text-main);
+    text-decoration: none;
+    transition: color var(--transition);
+}
+
+.brand h1 a:hover {
+    color: var(--accent-primary);
+}
+
+.brand h1 a:visited {
+    color: var(--text-main);
 }
 
 .brand-sub {
     font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
     line-height: 1;
-    color: var(--text-main);
 }
 
 .brand-sub a {
@@ -63,100 +110,37 @@ body {
     text-decoration: none;
 }
 
-.brand h1 {
-    font-family: 'Poppins', Arial, sans-serif;
-    font-weight: 600;
-    margin: 0;
-    font-size: 1.50rem;
-}
-
-.brand h1 a {
-    color: var(--text-main);
-    text-decoration: none;
-}
-
-.brand h1 a:hover,
-.brand h1 a:focus {
-    color: var(--text-main);
-    text-decoration: none;
-}
-
-.brand h1 a:visited {
-    color: var(--text-main);
-}
-
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.125rem;
+    flex-shrink: 0;
 }
 
-.header-actions button {
-    background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.875rem;
-}
-
-.header-actions button:not(.theme-toggle):hover {
-    background-color: var(--bg-panel);
-}
-
-.header-text-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    border: 1px solid var(--border-color);
-}
-
-.header-text-button span {
-    display: none;
-}
-
-@media (min-width: 768px) {
-    .header-text-button span {
-        display: inline;
-    }
-}
-
-/* Connection Bar */
-.connection-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--bg-panel);
-    border-bottom: 1px solid var(--border-color);
-    padding: 0.5rem 1rem;
-    flex-wrap: wrap;
-    /* responsive */
-    gap: 0.5rem;
-}
-
-.connection-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
+/* ==========================================
+   BUTTONS
+   ========================================== */
 button {
-    font-family: 'Poppins', Arial, sans-serif;
+    font-family: var(--font-ui);
     font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+    font-size: 13px;
+    padding: 0.4rem 0.875rem;
+    border-radius: var(--radius-md);
     border: none;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.375rem;
+    transition: background-color var(--transition), color var(--transition),
+        border-color var(--transition), opacity var(--transition);
+    white-space: nowrap;
+    line-height: 1;
 }
 
 button.primary {
     background-color: var(--accent-primary);
-    color: white;
+    color: #ffffff;
 }
 
 button.primary:hover {
@@ -165,7 +149,7 @@ button.primary:hover {
 
 button.danger {
     background-color: var(--accent-danger);
-    color: white;
+    color: #ffffff;
 }
 
 button.danger:hover {
@@ -173,26 +157,242 @@ button.danger:hover {
 }
 
 button.secondary {
-    background-color: var(--bg-base);
+    background-color: transparent;
     color: var(--text-main);
     border: 1px solid var(--border-color);
 }
 
 button.secondary:hover {
-    background-color: var(--bg-surface);
+    background-color: var(--bg-elevated);
+    border-color: var(--text-muted);
 }
 
 button:disabled,
 select:disabled,
 input:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
+    pointer-events: none;
+}
+
+.icon-button {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.375rem;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.icon-button:hover {
+    color: var(--text-main);
+    background-color: var(--bg-elevated);
+}
+
+.theme-toggle:hover {
+    color: var(--accent-primary);
+    background-color: var(--accent-primary-dim);
+}
+
+.header-text-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.625rem;
+    font-size: 0.8125rem;
+    border-radius: var(--radius-md);
+}
+
+@media (max-width: 768px) {
+    .header-text-button span {
+        display: none;
+    }
+}
+
+/* ==========================================
+   INPUTS & SELECTS
+   ========================================== */
+input,
+select {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    background-color: var(--bg-input);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.375rem 0.5rem;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px var(--accent-primary-dim);
+}
+
+input::placeholder {
+    color: var(--text-placeholder);
+}
+
+/* ==========================================
+   CONNECTION BAR  —  Postman "Request Bar"
+   ========================================== */
+.connection-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Pill-shaped URL bar container */
+.request-url-bar {
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--bg-input);
+    min-width: 0;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    min-height: 34px;
+}
+
+.request-url-bar:focus-within {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px var(--accent-primary-dim);
+}
+
+/* SERIAL method badge — analogue of GET/POST method selector */
+.method-badge {
+    background-color: var(--accent-primary);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    padding: 0 0.9rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-family: var(--font-ui);
+    display: flex;
+    align-items: center;
+    user-select: none;
+}
+
+/* Baud rate selector inside the bar */
+.baud-group {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0 0.75rem;
+    border-left: 1px solid var(--border-color);
+    flex-shrink: 0;
+    background-color: transparent;
+}
+
+.baud-label {
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.baud-group select {
+    border: none;
+    border-radius: 0;
+    background: var(--bg-input);
+    padding: 0.375rem 0.25rem;
+    font-size: 0.8125rem;
+    color: var(--text-main);
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.baud-group select option {
+    background-color: var(--bg-surface);
+    color: var(--text-main);
+}
+
+.baud-group select:focus {
+    box-shadow: none;
+    border: none;
+}
+
+/* Status inline — shows connection state inside the bar */
+.connection-status-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    padding: 0 0.875rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    border-left: 1px solid var(--border-color);
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Connect / Disconnect — right side of bar */
+.request-actions {
+    display: flex;
+    align-items: stretch;
+    border-left: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.request-actions button {
+    border-radius: 0;
+    border: none;
+    padding: 0 1rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.request-actions button.danger+button.primary,
+.request-actions button:not(:first-child) {
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.send-btn {
+    min-width: 90px;
+}
+
+/* Secondary nav — Commands toggle */
+.navbar-secondary {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+/* Ensure the Commands/header-text-button aligns with the connection bar height */
+.navbar-secondary .header-text-button {
+    height: 34px;
+    /* match .request-url-bar min-height */
+    padding: 0 0.75rem;
+    align-items: center;
+    display: inline-flex;
+}
+
+/* Legacy compatibility — these are inside .request-url-bar now */
+.connection-controls,
+.connection-status {
+    display: contents;
 }
 
 .divider {
     height: 1.5rem;
     width: 1px;
     background-color: var(--border-color);
+    flex-shrink: 0;
 }
 
 .setting-group {
@@ -201,30 +401,33 @@ input:disabled {
     gap: 0.5rem;
 }
 
-select {
-    font-family: 'Inter', 'Poppins', Arial, sans-serif;
-    padding: 0.25rem 0.5rem;
-    background-color: var(--bg-surface);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-}
-
-.connection-status {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-}
-
+/* ==========================================
+   STATUS DOT
+   ========================================== */
 .status-dot {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
+    flex-shrink: 0;
+    transition: background-color var(--transition), box-shadow var(--transition);
 }
 
 .status-dot.online {
     background-color: var(--status-online);
+    box-shadow: 0 0 0 2px rgba(63, 185, 80, 0.2);
+    animation: pulse-online 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse-online {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 2px rgba(63, 185, 80, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(63, 185, 80, 0.06);
+    }
 }
 
 .status-dot.offline {
@@ -233,23 +436,25 @@ select {
 
 .status-dot.error {
     background-color: var(--status-error);
+    box-shadow: 0 0 0 2px rgba(248, 81, 73, 0.2);
 }
 
-/* Main Body Layout */
+/* ==========================================
+   MAIN BODY LAYOUT
+   ========================================== */
 .app-body {
     flex: 1;
     display: flex;
     min-height: 0;
-    /* allows flex children to shrink */
     position: relative;
 }
 
-/* Side Panels */
+/* ==========================================
+   SIDE PANELS
+   ========================================== */
 .side-panel {
-    width: 250px;
-    background-color: var(--bg-surface);
-    border-left: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
+    width: 240px;
+    background-color: var(--bg-sidebar);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -257,29 +462,22 @@ select {
 }
 
 #panel-commands {
-    border-left: none;
-    /* Leftmost panel */
+    border-right: 1px solid var(--border-color);
 }
 
 #panel-settings {
-    border-right: none;
-    /* Rightmost panel */
+    border-left: 1px solid var(--border-color);
+    background-color: var(--bg-surface);
 }
 
-/* On mobile, panels might float over or collapse entirely. 
-   We will just hide them generally on small screens if needed. */
 @media (max-width: 768px) {
-    .app-body {
-        position: relative;
-    }
-
     .side-panel {
         position: absolute;
         top: 0;
         bottom: 0;
         z-index: 10;
         height: 100%;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
     }
 
     #panel-commands {
@@ -291,51 +489,108 @@ select {
     }
 }
 
+/* Panel header */
 .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: 0.625rem 0.875rem;
     border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
 }
 
 .panel-header h3 {
-    font-family: 'Poppins', Arial, sans-serif;
+    font-family: var(--font-ui);
     font-weight: 600;
-    font-size: 1rem;
-}
-
-.icon-button {
-    background: transparent;
-    border: none;
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
     color: var(--text-muted);
-    font-size: 1.1rem;
-    padding: 0.25rem;
 }
 
-.icon-button:hover {
-    /* background-color: var(--accent-primary); */
-    color: whitesmoke;
+/* ==========================================
+   COMMANDS LIST
+   ========================================== */
+.commands-list {
+    padding: 0.375rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
 }
 
-.theme-toggle:hover {
-    background-color: var(--accent-primary);
-    color: #ffffff;
-    border-color: var(--accent-primary);
+.command-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.625rem;
+    border-radius: var(--radius-sm);
+    gap: 0.5rem;
+    border: none;
+    background: transparent;
+    cursor: default;
+    transition: background-color var(--transition);
 }
 
-/* Forms within Settings */
+.command-item:hover {
+    background-color: var(--bg-elevated);
+}
+
+.command-item .cmd-name {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-main);
+    cursor: pointer;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.command-item .cmd-name::before {
+    content: '▶';
+    font-size: 0.45rem;
+    color: var(--accent-primary);
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+.command-item .cmd-name:hover {
+    color: var(--accent-primary);
+}
+
+/* Delete button hidden until hover */
+.command-item .icon-button {
+    opacity: 0;
+    transition: opacity var(--transition);
+    flex-shrink: 0;
+    padding: 0.2rem 0.3rem;
+}
+
+.command-item:hover .icon-button {
+    opacity: 1;
+}
+
+/* ==========================================
+   SETTINGS FORM
+   ========================================== */
 .settings-form {
-    padding: 1rem;
+    padding: 0.75rem;
+    overflow-y: auto;
 }
 
 .settings-form h4 {
-    font-family: 'Poppins', Arial, sans-serif;
+    font-family: var(--font-ui);
     font-weight: 600;
-    margin: 1rem 0 0.5rem;
-    font-size: 0.875rem;
-    color: var(--text-muted);
+    font-size: 0.6875rem;
     text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin: 1rem 0 0.5rem;
+    padding-bottom: 0.375rem;
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .settings-form h4:first-child {
@@ -346,53 +601,50 @@ select {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.form-group select {
+    font-size: 0.8125rem;
+    max-width: 140px;
 }
 
 .form-checkbox {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-checkbox label {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
 }
 
 .control-actions {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-top: 1.5rem;
+    margin-top: 1rem;
 }
 
-/* Commands List */
-.commands-list {
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+.control-actions button {
+    font-size: 0.8125rem;
+    padding: 0.4rem 0.75rem;
+    width: 100%;
+    justify-content: center;
 }
 
-.command-item {
-    display: flex;
-    justify-content: space-between;
-    background-color: var(--bg-panel);
-    border: 1px solid var(--border-color);
-    padding: 0.5rem;
-    border-radius: 4px;
-    align-items: center;
-    word-break: break-all;
-}
-
-.command-item .cmd-name {
-    font-weight: 500;
-    cursor: pointer;
-    flex: 1;
-}
-
-.command-item .cmd-name:hover {
-    color: var(--accent-primary);
-}
-
-/* Terminal Area */
+/* ==========================================
+   TERMINAL AREA
+   ========================================== */
 .terminal-area {
     flex: 1;
     min-height: 0;
@@ -402,12 +654,17 @@ select {
     min-width: 0;
 }
 
+/* ==========================================
+   VIEW TABS  (Terminal | Plotter)
+   ========================================== */
 .view-tabs {
     display: flex;
     align-items: flex-end;
     background-color: var(--bg-surface);
     border-bottom: 1px solid var(--border-color);
     flex-shrink: 0;
+    padding: 0 0.25rem;
+    gap: 0;
 }
 
 .view-tab {
@@ -415,15 +672,18 @@ select {
     border-bottom: 2px solid transparent;
     border-radius: 0;
     background: transparent;
-    color: var(--text-main);
-    padding: 0.65rem 1rem;
-    font-size: 0.85rem;
-    letter-spacing: 0.02em;
+    color: var(--text-muted);
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
     margin-bottom: -1px;
+    transition: color var(--transition), border-color var(--transition);
 }
 
 .view-tab:hover {
-    background-color: var(--bg-panel);
+    color: var(--text-main);
+    background: transparent;
 }
 
 .view-tab.active {
@@ -432,6 +692,55 @@ select {
     font-weight: 600;
 }
 
+/* ==========================================
+   RESPONSE META BAR  (port info + RX/TX)
+   ========================================== */
+.response-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 1rem;
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+    min-height: 28px;
+}
+
+.response-port-info {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+}
+
+.response-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.stat-item {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.stat-item span {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+/* ==========================================
+   OUTPUT VIEWS
+   ========================================== */
 .output-view {
     flex: 1;
     min-height: 0;
@@ -439,35 +748,63 @@ select {
     flex-direction: column;
 }
 
+/* ==========================================
+   TERMINAL OUTPUT  (Response Body)
+   ========================================== */
 .terminal-output {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: 1rem;
-    font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 0.875rem;
+    padding: 0.875rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.65;
     color: var(--term-text);
     white-space: pre-wrap;
     word-wrap: break-word;
     outline: none;
+    background-color: var(--term-bg);
+}
+
+/* Scrollbar */
+.terminal-output::-webkit-scrollbar {
+    width: 6px;
+}
+
+.terminal-output::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.terminal-output::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.terminal-output::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .terminal-content {
-    /* grows naturally with content */
     user-select: text;
     cursor: text;
 }
 
+/* Terminal stats hidden — content moved to response-meta */
 .terminal-stats {
-    padding: 0.4rem 1rem;
-    border-top: 1px solid var(--term-sys);
-    background-color: var(--term-bg);
+    display: none;
+}
+
+/* Terminal text type styles */
+.log-sys {
     color: var(--term-sys);
-    font-size: 0.75rem;
-    font-family: 'Consolas', 'Courier New', monospace;
-    display: flex;
-    gap: 1.5rem;
-    flex-shrink: 0;
+}
+
+.log-err {
+    color: var(--term-err);
+}
+
+.log-prompt {
+    color: var(--term-prompt);
 }
 
 /* Focus state for traditional mode */
@@ -475,6 +812,7 @@ select {
     box-shadow: inset 0 0 0 1px var(--term-prompt);
 }
 
+/* Blinking cursor */
 .cursor-block {
     display: inline-block;
     width: 0.5em;
@@ -496,53 +834,66 @@ select {
     }
 }
 
-.log-sys {
-    color: var(--term-sys);
-}
-
-.log-err {
-    color: var(--term-err);
-}
-
-.log-prompt {
-    color: var(--term-prompt);
-}
-
-/* Terminal Modern Input */
+/* ==========================================
+   INPUT AREA  (Command Input / Request Body)
+   ========================================== */
 .input-area {
     display: flex;
-    padding: 0.5rem;
+    align-items: stretch;
     background-color: var(--bg-surface);
     border-top: 1px solid var(--border-color);
-    gap: 0.5rem;
+    gap: 0;
+    flex-shrink: 0;
 }
 
 .input-area input {
     flex: 1;
-    padding: 0.5rem;
-    background-color: var(--term-bg);
-    color: var(--term-text);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-family: 'Consolas', 'Courier New', monospace;
+    padding: 0.625rem 1rem;
+    background-color: transparent;
+    color: var(--text-main);
+    border: none;
+    border-radius: 0;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
 }
 
 .input-area input:focus {
     outline: none;
-    border-color: var(--accent-primary);
+    border: none;
+    box-shadow: none;
+    background-color: var(--bg-elevated);
 }
 
-/* Footer */
-.app-footer {
+.input-area button {
+    border-radius: 0;
+    border: none;
+    border-left: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+}
+
+/* ==========================================
+   STATUS BAR (Footer)
+   ========================================== */
+.app-footer,
+.status-bar {
     display: flex;
     justify-content: space-between;
-    background-color: var(--bg-surface);
+    align-items: center;
+    background-color: var(--bg-sidebar);
     border-top: 1px solid var(--border-color);
-    padding: 0.5rem 1rem;
-    font-size: 0.75rem;
+    padding: 0 0.75rem;
+    font-size: 0.6875rem;
     color: var(--text-muted);
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+    min-height: 22px;
+    gap: 1rem;
 }
 
+/* ==========================================
+   PLOTTER
+   ========================================== */
 .plotter-toolbar {
     display: flex;
     align-items: center;
@@ -568,7 +919,7 @@ select {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-size: 0.9rem;
+    font-size: 0.8125rem;
     color: var(--plotter-toolbar-item-text);
 }
 
@@ -576,6 +927,7 @@ select {
     width: 14px;
     height: 14px;
     cursor: pointer;
+    accent-color: var(--accent-primary);
 }
 
 .legend-item span {
@@ -587,13 +939,14 @@ select {
     align-items: center;
     gap: 0.45rem;
     color: var(--plotter-toolbar-item-text);
-    font-size: 0.95rem;
+    font-size: 0.8125rem;
+    user-select: none;
 }
 
 .toggle-switch {
     position: relative;
-    width: 44px;
-    height: 24px;
+    width: 40px;
+    height: 22px;
 }
 
 .toggle-switch input {
@@ -606,22 +959,22 @@ select {
 .toggle-slider {
     position: absolute;
     inset: 0;
-    background-color: #6f7c7f;
+    background-color: var(--border-color);
     border-radius: 999px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--transition);
 }
 
 .toggle-slider::before {
     content: "";
     position: absolute;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     left: 3px;
     top: 3px;
     border-radius: 50%;
     background-color: #ffffff;
-    transition: transform 0.2s ease;
+    transition: transform var(--transition);
 }
 
 .toggle-switch input:checked+.toggle-slider {
@@ -629,49 +982,39 @@ select {
 }
 
 .toggle-switch input:checked+.toggle-slider::before {
-    transform: translateX(20px);
+    transform: translateX(18px);
 }
 
 .plotter-run-btn {
-    background-color: var(--accent-primary);
+    background-color: var(--accent-run);
     color: #ffffff;
     font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
     border: none;
-    min-width: 92px;
+    min-width: 84px;
     border-radius: 999px;
 }
 
 .plotter-run-btn:hover {
-    background-color: var(--accent-primary-hover);
+    background-color: var(--accent-run-hover);
 }
 
 .plotter-run-btn.paused {
     background-color: var(--accent-danger);
-    color: #ffffff;
 }
 
-.plotter-clear-btn {
-    color: var(--plotter-toolbar-item-text);
-    border: 1px solid var(--plotter-toolbar-border);
-    border-radius: 6px;
-    min-width: 36px;
-    min-height: 32px;
-}
-
-.plotter-clear-btn:hover {
-    background-color: var(--accent-primary);
-    color: #ffffff;
-    border-color: var(--accent-primary);
-}
-
+.plotter-clear-btn,
 .plotter-reset-btn {
     color: var(--plotter-toolbar-item-text);
     border: 1px solid var(--plotter-toolbar-border);
-    border-radius: 6px;
-    min-width: 36px;
-    min-height: 32px;
+    border-radius: var(--radius-md);
+    min-width: 32px;
+    min-height: 30px;
+    padding: 0.25rem 0.5rem;
 }
 
+.plotter-clear-btn:hover,
 .plotter-reset-btn:hover {
     background-color: var(--accent-primary);
     color: #ffffff;
@@ -679,25 +1022,26 @@ select {
 }
 
 .plotter-live-badge {
-    font-size: 0.7rem;
+    font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.06em;
-    padding: 2px 8px;
+    padding: 2px 7px;
     border-radius: 999px;
     border: 1px solid transparent;
     user-select: none;
     flex-shrink: 0;
+    font-family: var(--font-ui);
 }
 
 .plotter-live-badge.live {
     background-color: var(--accent-run);
-    color: #062324;
+    color: #ffffff;
 }
 
 .plotter-live-badge.paused {
     background-color: transparent;
     color: var(--plotter-label);
-    border-color: rgba(158, 176, 182, 0.4);
+    border-color: var(--plotter-toolbar-border);
 }
 
 .plotter-canvas-wrap {

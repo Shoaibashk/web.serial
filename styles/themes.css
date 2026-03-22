@@ -1,90 +1,126 @@
-/* Anthropic Brand Color Palette */
+/* =====================================================
+   Web Serial Terminal — Design Tokens
+   Postman-inspired color system
+   :root      = Light theme (default CSS base)
+   [data-theme="dark"] = Dark theme (app default via HTML attr)
+   ===================================================== */
+
+/* === LIGHT THEME (CSS base) === */
 :root {
-    /* Primary/Neutral Colors */
-    --bg-base: #faf9f5;
+    /* Backgrounds */
+    --bg-base: #f5f5f5;
     --bg-surface: #ffffff;
-    --bg-panel: #f0ede3;
-    --border-color: #b0aea5;
-    /*#e8e6dc;*/
-    --text-main: #141413;
-    --text-muted: #b0aea5;
+    --bg-panel: #f0f0f0;
+    --bg-elevated: #ebebeb;
+    --bg-input: #ffffff;
+    --bg-sidebar: #fafafa;
+    --border-color: #e0e0e0;
+    --border-subtle: #efefef;
 
-    /* Accent Colors */
-    --accent-primary: #d97757;
-    --accent-primary-hover: #c56340;
-    --accent-danger: #d97757;
-    --accent-danger-hover: #c56340;
+    /* Text */
+    --text-main: #191919;
+    --text-muted: #6e6e6e;
+    --text-placeholder: #a0a0a0;
 
-    /* Status Colors */
-    --status-online: #788c5d;
-    --status-offline: #b0aea5;
-    --status-error: #d97757;
+    /* Accent — Postman Orange */
+    --accent-primary: #f06524;
+    --accent-primary-hover: #e05510;
+    --accent-primary-dim: rgba(240, 101, 36, 0.08);
 
-    /* Secondary Accents */
-    /* --accent-secondary: #6a9bcc;
-    --accent-tertiary: #788c5d; */
-    --accent-run: #21b8b1;
-    --accent-run-hover: #1ca6a0;
+    /* Danger */
+    --accent-danger: #ee3442;
+    --accent-danger-hover: #c62333;
 
-    /* Terminal/Code Colors */
-    --term-bg: #1a1918;
-    --term-text: #e8e6dc;
-    --term-prompt: #d97757;
-    --term-sys: #b0aea5;
-    --term-err: #d97757;
+    /* Status */
+    --status-online: #1a7f37;
+    --status-offline: #9e9e9e;
+    --status-error: #ee3442;
 
-    /* Plotter Colors (light theme) */
-    --plotter-bg: #faf9f5;
-    --plotter-grid: rgba(5, 5, 5, 0.15);
-    --plotter-axis: rgba(80, 70, 60, 0.35);
-    --plotter-label: #6b6860;
-    --plotter-crosshair: rgba(0, 0, 0, 0.25);
-    --plotter-tooltip-bg: rgba(255, 252, 245, 0.96);
-    --plotter-tooltip-border: rgba(80, 70, 60, 0.25);
-    --plotter-tooltip-text: #141413;
-    --plotter-dot-stroke: rgba(240, 237, 227, 0.95);
+    /* Run/Live (plotter) */
+    --accent-run: #1a7f37;
+    --accent-run-hover: #156d2f;
 
-    /* Plotter Toolbar (light theme) */
-    --plotter-toolbar-bg: #f0ede3;
-    --plotter-toolbar-text: #6b6860;
-    --plotter-toolbar-item-text: #6b6860;
-    --plotter-toolbar-border: rgba(80, 70, 60, 0.08);
-    --plotter-canvas-wrap-bg: #f0ede3;
+    /* Terminal — stays dark in both themes */
+    --term-bg: #111111;
+    --term-text: #d4d4d4;
+    --term-prompt: #f06524;
+    --term-sys: #6e6e6e;
+    --term-err: #f85149;
+
+    /* Plotter (light) */
+    --plotter-bg: #f8f8f8;
+    --plotter-grid: rgba(0, 0, 0, 0.07);
+    --plotter-axis: rgba(0, 0, 0, 0.2);
+    --plotter-label: #6e6e6e;
+    --plotter-crosshair: rgba(0, 0, 0, 0.2);
+    --plotter-tooltip-bg: rgba(255, 255, 255, 0.96);
+    --plotter-tooltip-border: rgba(0, 0, 0, 0.12);
+    --plotter-tooltip-text: #191919;
+    --plotter-dot-stroke: rgba(250, 250, 250, 0.95);
+    --plotter-toolbar-bg: #f0f0f0;
+    --plotter-toolbar-text: #191919;
+    --plotter-toolbar-item-text: #6e6e6e;
+    --plotter-toolbar-border: rgba(0, 0, 0, 0.08);
+    --plotter-canvas-wrap-bg: #f0f0f0;
 }
 
+/* === DARK THEME (App default — applied via data-theme="dark" on <html>) === */
 [data-theme="dark"] {
-    /* Primary/Neutral Colors */
-    --bg-base: #1a1918;
-    --bg-surface: #242221;
-    --bg-panel: #2a2826;
-    --border-color: #3a3836;
-    --text-main: #e8e6dc;
-    --text-muted: #b0aea5;
+    /* Backgrounds */
+    --bg-base: #1c1c1c;
+    --bg-surface: #242424;
+    --bg-panel: #2a2a2a;
+    --bg-elevated: #2f2f2f;
+    --bg-input: #1c1c1c;
+    --bg-sidebar: #141414;
+    --border-color: #333333;
+    --border-subtle: #2a2a2a;
 
-    /* Terminal/Code Colors */
-    --term-bg: #0d0d0c;
-    --term-text: #e8e6dc;
+    /* Text */
+    --text-main: #d4d4d4;
+    --text-muted: #8e8e8e;
+    --text-placeholder: #4d4d4d;
 
-    /* Plotter Colors (dark theme) */
-    --plotter-bg: #1a1918;
-    --plotter-grid: rgba(205, 220, 227, 0.14);
-    --plotter-axis: rgba(205, 220, 227, 0.3);
-    --plotter-label: #9eb0b6;
-    --plotter-crosshair: rgba(255, 255, 255, 0.28);
-    --plotter-tooltip-bg: rgba(8, 12, 16, 0.92);
-    --plotter-tooltip-border: rgba(205, 220, 227, 0.18);
-    --plotter-tooltip-text: #cfdbe1;
-    --plotter-dot-stroke: rgba(15, 23, 30, 0.95);
+    /* Accent dim shift for dark */
+    --accent-primary-dim: rgba(240, 101, 36, 0.12);
 
-    /* Plotter Toolbar (dark theme) */
-    --plotter-toolbar-bg: #2a2826;
-    --plotter-toolbar-text: #dde7e9;
-    --plotter-toolbar-item-text: #d4dcde;
+    /* Danger */
+    --accent-danger: #f85149;
+    --accent-danger-hover: #da3633;
+
+    /* Status */
+    --status-online: #3fb950;
+    --status-offline: #5e5e5e;
+    --status-error: #f85149;
+
+    /* Run/Live */
+    --accent-run: #3fb950;
+    --accent-run-hover: #2ea043;
+
+    /* Terminal */
+    --term-bg: #0d0d0d;
+    --term-text: #d4d4d4;
+    --term-sys: #666666;
+    --term-err: #f85149;
+
+    /* Plotter (dark) */
+    --plotter-bg: #141414;
+    --plotter-grid: rgba(255, 255, 255, 0.07);
+    --plotter-axis: rgba(255, 255, 255, 0.2);
+    --plotter-label: #8e8e8e;
+    --plotter-crosshair: rgba(255, 255, 255, 0.25);
+    --plotter-tooltip-bg: rgba(20, 20, 20, 0.96);
+    --plotter-tooltip-border: rgba(255, 255, 255, 0.12);
+    --plotter-tooltip-text: #d4d4d4;
+    --plotter-dot-stroke: rgba(20, 20, 20, 0.95);
+    --plotter-toolbar-bg: #1e1e1e;
+    --plotter-toolbar-text: #d4d4d4;
+    --plotter-toolbar-item-text: #a0a0a0;
     --plotter-toolbar-border: rgba(255, 255, 255, 0.08);
-    --plotter-canvas-wrap-bg: #0f171e;
+    --plotter-canvas-wrap-bg: #141414;
 }
 
-/* Base Terminal Colors (used for ANSI rendering) */
+/* === ANSI Terminal Colors (both themes) === */
 :root {
     --ansi-black: #000000;
     --ansi-red: #cd3131;
