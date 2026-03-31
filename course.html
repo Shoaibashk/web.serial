@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Web Serial Terminal Works — Interactive Course</title>
+<style>
+/* ======================================
+   FOUNDATIONS
+   ====================================== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#0a0a0f;
+  --bg-card:#12121a;
+  --bg-code:#0d0d15;
+  --bg-quiz:#161622;
+  --accent:#f06524;
+  --accent-dim:rgba(240,101,36,.12);
+  --accent-glow:rgba(240,101,36,.25);
+  --green:#3fb950;
+  --green-dim:rgba(63,185,80,.12);
+  --blue:#58a6ff;
+  --blue-dim:rgba(88,166,255,.12);
+  --purple:#d2a8ff;
+  --purple-dim:rgba(210,168,255,.12);
+  --cyan:#39d2c0;
+  --cyan-dim:rgba(57,210,192,.12);
+  --yellow:#e3b341;
+  --yellow-dim:rgba(227,179,65,.12);
+  --pink:#f778ba;
+  --pink-dim:rgba(247,120,186,.12);
+  --red:#f85149;
+  --red-dim:rgba(248,81,73,.12);
+  --text:#e6edf3;
+  --text-muted:#8b949e;
+  --text-dim:#484f58;
+  --border:#21262d;
+  --border-subtle:#161b22;
+  --font-sans:'Inter',system-ui,-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code','Cascadia Code',monospace;
+  --section-gap:0;
+  --max-w:860px;
+  --radius:12px;
+  --radius-sm:8px;
+}
+
+html{scroll-behavior:smooth;scrollbar-color:var(--border) var(--bg)}
+body{
+  font-family:var(--font-sans);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.7;
+  font-size:17px;
+  overflow-x:hidden;
+}
+
+::selection{background:var(--accent);color:#fff}
+
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ======================================
+   NAV BAR
+   ====================================== */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(10,10,15,.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{font-weight:700;font-size:15px;color:var(--text);display:flex;align-items:center;gap:10px}
+.nav-brand .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
+.nav-progress{position:absolute;bottom:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--yellow));transition:width .3s ease;width:0}
+.nav-links{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-link{
+  font-size:12px;padding:6px 12px;border-radius:20px;
+  color:var(--text-muted);white-space:nowrap;cursor:pointer;
+  border:1px solid transparent;transition:all .2s;
+  background:transparent;font-family:var(--font-sans);
+}
+.nav-link:hover{color:var(--text);border-color:var(--border)}
+.nav-link.active{color:var(--accent);border-color:var(--accent);background:var(--accent-dim)}
+
+/* ======================================
+   SECTIONS
+   ====================================== */
+.section{
+  min-height:100vh;
+  padding:96px 24px 64px;
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;
+  opacity:0;transform:translateY(40px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+.section.visible{opacity:1;transform:translateY(0)}
+.section-inner{width:100%;max-width:var(--max-w)}
+.section-number{
+  font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-number::before{content:'';width:24px;height:1px;background:var(--accent)}
+.section h2{font-size:clamp(28px,5vw,42px);font-weight:800;margin-bottom:16px;line-height:1.2}
+.section h2 .highlight{
+  background:linear-gradient(135deg,var(--accent),var(--yellow));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.section .subtitle{font-size:18px;color:var(--text-muted);max-width:640px;margin-bottom:40px}
+
+/* ======================================
+   HERO
+   ====================================== */
+.hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:24px;
+  background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(240,101,36,.06),transparent);
+}
+.hero h1{font-size:clamp(36px,7vw,64px);font-weight:900;margin-bottom:20px;line-height:1.1}
+.hero h1 .accent{
+  background:linear-gradient(135deg,var(--accent),var(--yellow));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero .tagline{font-size:clamp(16px,2.5vw,22px);color:var(--text-muted);max-width:600px;margin:0 auto 36px}
+.hero-meta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:40px}
+.hero-badge{
+  font-size:13px;padding:6px 14px;border-radius:20px;
+  border:1px solid var(--border);color:var(--text-muted);
+  display:flex;align-items:center;gap:6px;
+}
+.hero-badge .emoji{font-size:16px}
+.start-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 32px;border-radius:30px;
+  background:var(--accent);color:#fff;
+  font-size:16px;font-weight:600;
+  border:none;cursor:pointer;
+  transition:all .2s;
+  font-family:var(--font-sans);
+}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px var(--accent-glow)}
+
+/* ======================================
+   CARDS
+   ====================================== */
+.card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:28px;
+  margin-bottom:20px;
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);
+}
+.card h3{font-size:20px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.card p,.card li{color:var(--text-muted);line-height:1.8}
+.card ul{list-style:none;margin-top:8px}
+.card ul li{padding:4px 0}
+.card ul li::before{content:'→ ';color:var(--accent)}
+
+/* ======================================
+   CODE BLOCKS with side-by-side
+   ====================================== */
+.code-explain{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:2px;
+  border-radius:var(--radius);
+  overflow:hidden;
+  margin:20px 0;
+  border:1px solid var(--border);
+}
+@media(max-width:768px){.code-explain{grid-template-columns:1fr}}
+.code-explain .code-side{
+  background:var(--bg-code);
+  padding:20px;
+  font-family:var(--font-mono);
+  font-size:13px;
+  line-height:1.8;
+  overflow-x:auto;
+  white-space:pre;
+  color:#c9d1d9;
+}
+.code-explain .explain-side{
+  background:var(--bg-card);
+  padding:20px;
+  font-size:14px;
+  line-height:1.8;
+  color:var(--text-muted);
+  border-left:3px solid var(--accent);
+}
+.explain-side strong{color:var(--text);font-weight:600}
+.explain-side .line-ref{
+  display:inline-block;
+  font-size:11px;font-weight:600;
+  background:var(--accent-dim);
+  color:var(--accent);
+  padding:1px 7px;border-radius:4px;
+  margin-right:4px;font-family:var(--font-mono);
+}
+
+/* simple code block (no side by side) */
+.code-block{
+  background:var(--bg-code);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:20px;
+  font-family:var(--font-mono);
+  font-size:13px;line-height:1.8;
+  overflow-x:auto;white-space:pre;
+  color:#c9d1d9;
+  margin:16px 0;
+}
+
+/* syntax highlighting helpers */
+.kw{color:#ff7b72} /* keyword */
+.fn{color:#d2a8ff} /* function */
+.str{color:#a5d6ff} /* string */
+.cmt{color:#484f58;font-style:italic} /* comment */
+.num{color:#79c0ff} /* number */
+.cls{color:#ffa657} /* class/type */
+.prop{color:#7ee787} /* property/field */
+.op{color:#ff7b72} /* operator */
+
+/* ======================================
+   ANIMATED ARCHITECTURE DIAGRAM
+   ====================================== */
+.arch-diagram{
+  position:relative;
+  width:100%;
+  max-width:720px;
+  margin:32px auto;
+  padding:32px 16px;
+}
+.arch-box{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:14px 20px;
+  text-align:center;
+  font-weight:600;
+  font-size:14px;
+  position:relative;
+  z-index:2;
+  transition:all .3s;
+}
+.arch-box:hover{border-color:var(--accent);transform:scale(1.04)}
+.arch-box .tag{font-size:11px;color:var(--text-muted);font-weight:400;display:block;margin-top:2px}
+
+.arch-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-top:16px;
+}
+.arch-center{
+  grid-column:1 / -1;
+  display:flex;justify-content:center;
+  margin-bottom:8px;
+}
+.arch-center .arch-box{
+  background:var(--accent-dim);
+  border-color:var(--accent);
+  color:var(--accent);
+  min-width:200px;
+}
+.arch-events{
+  grid-column:1 / -1;
+  display:flex;justify-content:center;
+  margin:20px 0;
+}
+.arch-events .arch-box{
+  background:var(--green-dim);
+  border-color:var(--green);
+  color:var(--green);
+  min-width:280px;
+}
+
+/* event flow arrows - CSS animated */
+.event-flow{
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;margin:8px 0;
+  color:var(--text-dim);font-size:13px;
+}
+.event-flow .arrow{
+  display:inline-block;
+  animation:pulse-arrow 2s ease-in-out infinite;
+}
+@keyframes pulse-arrow{
+  0%,100%{opacity:.3;transform:translateY(0)}
+  50%{opacity:1;transform:translateY(-3px)}
+}
+
+/* ======================================
+   FLOW ANIMATION
+   ====================================== */
+.flow-demo{
+  position:relative;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:32px 24px;
+  margin:28px 0;
+  overflow:hidden;
+}
+.flow-steps{
+  display:flex;align-items:center;gap:12px;
+  flex-wrap:wrap;justify-content:center;
+}
+.flow-step{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:16px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);
+  min-width:120px;text-align:center;
+  font-size:13px;font-weight:500;
+  opacity:0;
+  animation:flow-in .6s ease forwards;
+}
+.flow-step .icon{font-size:24px;margin-bottom:4px}
+.flow-step:nth-child(1){animation-delay:.1s;border-color:var(--blue);color:var(--blue);background:var(--blue-dim)}
+.flow-step:nth-child(2){animation-delay:.3s}
+.flow-step:nth-child(3){animation-delay:.5s;border-color:var(--green);color:var(--green);background:var(--green-dim)}
+.flow-step:nth-child(4){animation-delay:.7s}
+.flow-step:nth-child(5){animation-delay:.9s;border-color:var(--purple);color:var(--purple);background:var(--purple-dim)}
+.flow-step:nth-child(6){animation-delay:1.1s}
+.flow-step:nth-child(7){animation-delay:1.3s;border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim)}
+.flow-arrow{
+  font-size:20px;color:var(--text-dim);
+  opacity:0;animation:flow-in .4s ease forwards;
+}
+.flow-arrow:nth-child(2){animation-delay:.2s}
+.flow-arrow:nth-child(4){animation-delay:.6s}
+.flow-arrow:nth-child(6){animation-delay:1s}
+
+@keyframes flow-in{to{opacity:1}}
+
+/* ======================================
+   QUIZ
+   ====================================== */
+.quiz{
+  background:var(--bg-quiz);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:28px;
+  margin:28px 0;
+}
+.quiz h4{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.quiz h4::before{
+  content:'?';display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--accent-dim);color:var(--accent);
+  font-weight:800;font-size:14px;
+}
+.quiz-options{display:flex;flex-direction:column;gap:8px}
+.quiz-option{
+  padding:12px 16px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);
+  cursor:pointer;font-size:14px;
+  transition:all .2s;
+  background:transparent;
+  text-align:left;
+  color:var(--text);
+  font-family:var(--font-sans);
+  line-height:1.6;
+}
+.quiz-option:hover{border-color:var(--accent);background:var(--accent-dim)}
+.quiz-option.correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-option.wrong{border-color:var(--red);background:var(--red-dim);color:var(--red)}
+.quiz-feedback{margin-top:12px;font-size:14px;padding:12px;border-radius:var(--radius-sm);display:none}
+.quiz-feedback.show{display:block}
+.quiz-feedback.correct{background:var(--green-dim);color:var(--green);border:1px solid rgba(63,185,80,.2)}
+.quiz-feedback.wrong{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,81,73,.2)}
+
+/* ======================================
+   COMPARISON TABLE
+   ====================================== */
+.compare-table{
+  width:100%;border-collapse:collapse;margin:20px 0;
+  font-size:14px;
+}
+.compare-table th,.compare-table td{
+  padding:12px 16px;text-align:left;
+  border-bottom:1px solid var(--border);
+}
+.compare-table th{
+  color:var(--text-muted);font-weight:600;font-size:12px;
+  text-transform:uppercase;letter-spacing:1px;
+}
+.compare-table td:first-child{font-weight:600;color:var(--text)}
+.compare-table tr:hover td{background:rgba(255,255,255,.02)}
+
+/* ======================================
+   MODULE BADGE
+   ====================================== */
+.mod-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:20px;
+  font-size:12px;font-weight:600;
+  font-family:var(--font-mono);
+}
+.mod-badge.config{background:var(--yellow-dim);color:var(--yellow)}
+.mod-badge.serial{background:var(--blue-dim);color:var(--blue)}
+.mod-badge.terminal{background:var(--green-dim);color:var(--green)}
+.mod-badge.input{background:var(--purple-dim);color:var(--purple)}
+.mod-badge.plotter{background:var(--cyan-dim);color:var(--cyan)}
+.mod-badge.app{background:var(--accent-dim);color:var(--accent)}
+.mod-badge.sw{background:var(--pink-dim);color:var(--pink)}
+
+/* ======================================
+   CALLOUT
+   ====================================== */
+.callout{
+  padding:16px 20px;
+  border-radius:var(--radius-sm);
+  border-left:3px solid;
+  margin:20px 0;
+  font-size:14px;
+}
+.callout.info{border-color:var(--blue);background:var(--blue-dim);color:var(--blue)}
+.callout.tip{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.callout.warn{border-color:var(--yellow);background:var(--yellow-dim);color:var(--yellow)}
+.callout strong{color:inherit}
+
+/* ======================================
+   FINAL SCORE
+   ====================================== */
+.score-card{
+  text-align:center;
+  padding:48px 32px;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin:32px 0;
+}
+.score-ring{
+  width:140px;height:140px;
+  border-radius:50%;
+  border:6px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;
+  font-size:42px;font-weight:900;
+  color:var(--accent);
+  position:relative;
+}
+.score-ring::after{
+  content:'';position:absolute;inset:-6px;
+  border-radius:50%;
+  border:6px solid transparent;
+  border-top-color:var(--accent);
+  animation:spin 3s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.score-label{font-size:14px;color:var(--text-muted)}
+
+/* ======================================
+   RESPONSIVE
+   ====================================== */
+@media(max-width:640px){
+  .section{padding:80px 16px 48px}
+  .card{padding:20px}
+  .arch-grid{grid-template-columns:1fr}
+  .flow-steps{flex-direction:column}
+  .flow-arrow{transform:rotate(90deg)}
+  .nav-links{display:none}
+}
+
+/* ======================================
+   PRINT
+   ====================================== */
+@media print{
+  .nav{display:none}
+  .section{opacity:1!important;transform:none!important;min-height:auto;page-break-inside:avoid}
+}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ======================== NAV ======================== -->
+<nav class="nav" id="nav">
+  <div class="nav-brand"><span class="dot"></span> Web Serial Terminal — The Course</div>
+  <div class="nav-links" id="nav-links"></div>
+  <div class="nav-progress" id="nav-progress"></div>
+</nav>
+
+<!-- ======================== 0 · HERO ======================== -->
+<section class="hero" id="s-hero">
+  <div>
+    <h1>How <span class="accent">Web Serial Terminal</span> Works</h1>
+    <p class="tagline">An interactive course that walks you through a real browser-based serial terminal — no coding experience required.</p>
+    <div class="hero-meta">
+      <span class="hero-badge"><span class="emoji">📖</span> 9 chapters</span>
+      <span class="hero-badge"><span class="emoji">🧩</span> 7 quizzes</span>
+      <span class="hero-badge"><span class="emoji">⏱️</span> ~20 min read</span>
+      <span class="hero-badge"><span class="emoji">💡</span> Zero prerequisites</span>
+    </div>
+    <button class="start-btn" onclick="document.getElementById('s-overview').scrollIntoView({behavior:'smooth'})">
+      Start Learning ↓
+    </button>
+  </div>
+</section>
+
+<!-- ======================== 1 · OVERVIEW ======================== -->
+<section class="section" id="s-overview" data-title="Overview">
+  <div class="section-inner">
+    <div class="section-number">Chapter 1</div>
+    <h2>What Is <span class="highlight">Web Serial Terminal</span>?</h2>
+    <p class="subtitle">Imagine plugging a hardware device (like an Arduino) into your computer and talking to it directly from your web browser — no app download needed.</p>
+
+    <div class="card">
+      <h3>🔌 The Problem It Solves</h3>
+      <p>Normally, to communicate with hardware devices over a serial port (USB cable), you need to install desktop software like PuTTY, the Arduino IDE, or screen. <strong>Web Serial Terminal replaces all of that</strong> — it runs entirely in your browser.</p>
+      <ul>
+        <li>Works in Chrome, Edge, and Opera (desktop)</li>
+        <li>No installation, no drivers, no build step</li>
+        <li>Settings auto-save so you can pick up where you left off</li>
+        <li>Includes a real-time data plotter for graphing sensor data</li>
+        <li>Works offline once loaded (it's a Progressive Web App)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>🧩 How It's Built</h3>
+      <p>The entire app is plain HTML, CSS, and JavaScript — no React, no Vue, no build tools. Six JavaScript files, each responsible for one job:</p>
+
+      <table class="compare-table">
+        <thead><tr><th>File</th><th>What It Does</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mod-badge config">config.js</span></td><td>Remembers your settings (baud rate, theme, etc.)</td></tr>
+          <tr><td><span class="mod-badge serial">serial-manager.js</span></td><td>Talks to the USB device via Web Serial API</td></tr>
+          <tr><td><span class="mod-badge terminal">terminal-renderer.js</span></td><td>Displays text on screen, including colored text</td></tr>
+          <tr><td><span class="mod-badge input">input-handler.js</span></td><td>Handles keyboard input in two different modes</td></tr>
+          <tr><td><span class="mod-badge plotter">plotter.js</span></td><td>Draws real-time line graphs from serial data</td></tr>
+          <tr><td><span class="mod-badge app">app.js</span></td><td>Wires everything together and manages the UI</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="quiz" data-quiz="q1">
+      <h4>Quick Check</h4>
+      <p style="color:var(--text-muted);margin-bottom:12px">What does Web Serial Terminal replace?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-correct="true">Desktop serial tools like PuTTY or Arduino IDE</button>
+        <button class="quiz-option">A text editor like VS Code</button>
+        <button class="quiz-option">A web server like Apache or Nginx</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== 2 · ARCHITECTURE ======================== -->
+<section class="section" id="s-architecture" data-title="Architecture">
+  <div class="section-inner">
+    <div class="section-number">Chapter 2</div>
+    <h2>The <span class="highlight">Big Picture</span></h2>
+    <p class="subtitle">Every module is independent. They never call each other directly — instead, they broadcast "events" that anyone can listen to, like a radio station.</p>
+
+    <div class="arch-diagram">
+      <div class="arch-center">
+        <div class="arch-box" style="border-color:var(--green);background:var(--green-dim)">
+          🔗 Custom DOM Events on <code>window</code>
+          <span class="tag">The communication highway</span>
+        </div>
+      </div>
+
+      <div class="event-flow">
+        <span class="arrow">▼</span> Events flow down to all listeners <span class="arrow">▼</span>
+      </div>
+
+      <div class="arch-grid">
+        <div class="arch-box" style="border-color:var(--yellow)">
+          ⚙️ Config
+          <span class="tag">config.js</span>
+        </div>
+        <div class="arch-box" style="border-color:var(--blue)">
+          🔌 Serial
+          <span class="tag">serial-manager.js</span>
+        </div>
+        <div class="arch-box" style="border-color:var(--green)">
+          📺 Terminal
+          <span class="tag">terminal-renderer.js</span>
+        </div>
+        <div class="arch-box" style="border-color:var(--purple)">
+          ⌨️ Input
+          <span class="tag">input-handler.js</span>
+        </div>
+        <div class="arch-box" style="border-color:var(--cyan)">
+          📊 Plotter
+          <span class="tag">plotter.js</span>
+        </div>
+        <div class="arch-box" style="border-color:var(--accent)">
+          🎛️ App
+          <span class="tag">app.js (orchestrator)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📡 Events: The Secret Sauce</h3>
+      <p>When the serial port receives data, it doesn't call the terminal directly. Instead, it shouts <code>serial:data</code> to the whole page. Any module that cares about serial data can listen:</p>
+
+      <div class="code-explain">
+        <div class="code-side"><span class="cmt">// In serial-manager.js — Broadcasting</span>
+<span class="kw">const</span> text = <span class="kw">this</span>.decoder.decode(value);
+<span class="kw">this</span>.emit(<span class="str">"data"</span>, text);
+
+<span class="cmt">// emit() creates a custom event:</span>
+emit(eventName, detail) {
+  window.dispatchEvent(
+    <span class="kw">new</span> <span class="cls">CustomEvent</span>(
+      <span class="str">`serial:${eventName}`</span>,
+      { detail }
+    )
+  );
+}</div>
+        <div class="explain-side">
+          <p><strong>Think of it like a radio broadcast.</strong></p>
+          <p><span class="line-ref">Line 1-2</span> The serial module decodes raw bytes into text and calls <code>emit("data", text)</code>.</p>
+          <p><span class="line-ref">Line 5-11</span> <code>emit()</code> creates a <strong>Custom Event</strong> named <code>"serial:data"</code> and dispatches it on the <code>window</code> object.</p>
+          <p>Any module that wants to react to incoming data just says <code>window.addEventListener("serial:data", ...)</code>. Both the terminal and the plotter do this independently.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <strong>Why events?</strong> If the serial module had to know about the terminal AND the plotter AND any future module, the code would become tangled. Events keep everything loosely coupled — you can add or remove listeners without changing the broadcaster.
+    </div>
+
+    <div class="card">
+      <h3>🗂️ The Event Catalog</h3>
+      <table class="compare-table">
+        <thead><tr><th>Event Name</th><th>Fired When…</th><th>Data Carried</th></tr></thead>
+        <tbody>
+          <tr><td><code>serial:connected</code></td><td>Device is connected</td><td>USB vendor/product IDs</td></tr>
+          <tr><td><code>serial:data</code></td><td>Bytes arrive from device</td><td>Decoded text string</td></tr>
+          <tr><td><code>serial:disconnected</code></td><td>Device is disconnected</td><td>—</td></tr>
+          <tr><td><code>serial:error</code></td><td>Something goes wrong</td><td>Error object</td></tr>
+          <tr><td><code>serial:stats</code></td><td>Bytes counted</td><td><code>{rx, tx}</code> byte counts</td></tr>
+          <tr><td><code>config:changed</code></td><td>A setting changes</td><td><code>{key, value}</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="quiz" data-quiz="q2">
+      <h4>Quick Check</h4>
+      <p style="color:var(--text-muted);margin-bottom:12px">How do the modules communicate with each other?</p>
+      <div class="quiz-options">
+        <button class="quiz-option">They import each other's functions directly</button>
+        <button class="quiz-option" data-correct="true">They broadcast custom DOM events on the window object</button>
+        <button class="quiz-option">They send HTTP requests to a local server</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== 3 · CONFIG ======================== -->
+<section class="section" id="s-config" data-title="Config">
+  <div class="section-inner">
+    <div class="section-number">Chapter 3</div>
+    <h2>Remembering <span class="highlight">Your Settings</span></h2>
+    <p class="subtitle">Close the tab, come back tomorrow, and everything is exactly how you left it. Here's how that works.</p>
+
+    <div class="card">
+      <h3><span class="mod-badge config">config.js</span> — The Memory Keeper</h3>
+      <p>This module uses <strong>localStorage</strong> — a built-in browser feature that stores data permanently on your computer (like a tiny invisible notepad).</p>
+
+      <div class="code-explain">
+        <div class="code-side"><span class="kw">const</span> CONFIG_KEY = <span class="str">"web_serial_terminal_config"</span>;
+
+<span class="kw">const</span> DEFAULT_CONFIG = {
+  baudRate: <span class="str">"115200"</span>,
+  dataBits: <span class="str">"8"</span>,
+  stopBits: <span class="str">"1"</span>,
+  parity: <span class="str">"none"</span>,
+  flowControl: <span class="str">"none"</span>,
+  terminalMode: <span class="str">"modern"</span>,
+  lineEnding: <span class="str">"\r\n"</span>,
+  localEcho: <span class="kw">true</span>,
+  theme: <span class="str">"dark"</span>,
+  quickCommands: [ <span class="cmt">/* ... */</span> ],
+  history: [],
+};</div>
+        <div class="explain-side">
+          <p><strong>A dictionary of defaults.</strong></p>
+          <p><span class="line-ref">Line 1</span> The storage key — all settings live under one name in localStorage.</p>
+          <p><span class="line-ref">Lines 3–15</span> Every setting has a sensible default. If you've never used the app before, these are what you get.</p>
+          <p>Settings include serial port parameters (baud rate, etc.), UI preferences (theme, mode), and even your saved command shortcuts.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>💾 Load → Merge → Save</h3>
+      <p>The clever part: when loading saved settings, the code <strong>merges</strong> them with the defaults. This means if a new version adds a setting, your old save file won't break — the new setting just gets its default value.</p>
+
+      <div class="code-explain">
+        <div class="code-side">loadConfig() {
+  <span class="kw">const</span> saved = localStorage.getItem(CONFIG_KEY);
+  <span class="kw">if</span> (saved) {
+    <span class="kw">const</span> parsed = JSON.parse(saved);
+    <span class="kw">return this</span>.mergeDeep(DEFAULT_CONFIG, parsed);
+  }
+  <span class="kw">return</span> structuredClone(DEFAULT_CONFIG);
+}
+
+set(key, value) {
+  <span class="kw">this</span>.settings[key] = value;
+  <span class="kw">this</span>.saveConfig();
+  window.dispatchEvent(
+    <span class="kw">new</span> <span class="cls">CustomEvent</span>(<span class="str">"config:changed"</span>, {
+      detail: { key, value }
+    })
+  );
+}</div>
+        <div class="explain-side">
+          <p><span class="line-ref">loadConfig()</span> Tries to read from localStorage. If found, it deeply merges old + new defaults so nothing is lost.</p>
+          <p><span class="line-ref">set()</span> When you change a setting:</p>
+          <ol style="padding-left:20px;color:var(--text-muted)">
+            <li>Updates the in-memory copy</li>
+            <li>Writes to localStorage immediately</li>
+            <li>Fires a <code>config:changed</code> event so the UI updates</li>
+          </ol>
+          <p>This three-step pattern is used everywhere — it's what makes the app feel instantly responsive.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <strong>Try it yourself:</strong> Open the app, change a setting, then type this in DevTools console: <code>JSON.parse(localStorage.getItem('web_serial_terminal_config'))</code>. You'll see all your settings stored as JSON.
+    </div>
+
+    <div class="quiz" data-quiz="q3">
+      <h4>Quick Check</h4>
+      <p style="color:var(--text-muted);margin-bottom:12px">Why does the Config module merge saved settings with defaults?</p>
+      <div class="quiz-options">
+        <button class="quiz-option">To make the app load faster</button>
+        <button class="quiz-option">To encrypt the settings for security</button>
+        <button class="quiz-option" data-correct="true">So new settings added in updates get their default values without breaking old saves</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== 4 · SERIAL ======================== -->
+<section class="section" id="s-serial" data-title="Serial">
+  <div class="section-inner">
+    <div class="section-number">Chapter 4</div>
+    <h2>Talking to <span class="highlight">Hardware</span></h2>
+    <p class="subtitle">The heart of the app — how your browser actually communicates with a physical USB device.</p>
+
+    <div class="flow-demo">
+      <div class="flow-steps">
+        <div class="flow-step"><span class="icon">👆</span>User clicks<br>"Connect"</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><span class="icon">🔐</span>Browser shows<br>device picker</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><span class="icon">🔌</span>Port opens<br>with settings</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><span class="icon">🔄</span>Read loop<br>starts forever</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="mod-badge serial">serial-manager.js</span> — The USB Whisperer</h3>
+
+      <div class="code-explain">
+        <div class="code-side"><span class="kw">async</span> connect(options) {
+  <span class="cmt">// Step 1: Ask user to pick a device</span>
+  <span class="kw">this</span>.port = <span class="kw">await</span> navigator.serial.requestPort();
+
+  <span class="cmt">// Step 2: Open with serial settings</span>
+  <span class="kw">await this</span>.port.open({
+    baudRate: parseInt(options.baudRate),
+    dataBits: parseInt(options.dataBits),
+    stopBits: parseInt(options.stopBits),
+    parity: options.parity,
+    flowControl: options.flowControl,
+  });
+
+  <span class="cmt">// Step 3: Start the infinite read loop</span>
+  <span class="kw">this</span>.keepReading = <span class="kw">true</span>;
+  <span class="kw">this</span>.startReading();
+
+  <span class="cmt">// Step 4: Tell everyone we're connected</span>
+  <span class="kw">this</span>.emit(<span class="str">"connected"</span>, <span class="kw">this</span>.port.getInfo());
+}</div>
+        <div class="explain-side">
+          <p><strong>Four steps to connection:</strong></p>
+          <p><span class="line-ref">Step 1</span> The browser pops up a device picker — the user must explicitly choose which device to allow. This is a security feature.</p>
+          <p><span class="line-ref">Step 2</span> Opens the serial port with the configured baud rate and other settings. Both sides (browser + device) must agree on these values.</p>
+          <p><span class="line-ref">Step 3</span> Starts an infinite loop that continuously reads bytes from the device.</p>
+          <p><span class="line-ref">Step 4</span> Broadcasts a <code>serial:connected</code> event so the UI and other modules can react.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🔁 The Infinite Read Loop</h3>
+      <p>Once connected, the serial manager enters a loop that never stops (until you disconnect). Every time bytes arrive, it decodes them and broadcasts:</p>
+
+      <div class="code-explain">
+        <div class="code-side"><span class="kw">async</span> startReading() {
+  <span class="kw">while</span> (<span class="kw">this</span>.port.readable && <span class="kw">this</span>.keepReading) {
+    <span class="kw">this</span>.reader = <span class="kw">this</span>.port.readable.getReader();
+    <span class="kw">try</span> {
+      <span class="kw">while</span> (<span class="kw">true</span>) {
+        <span class="kw">const</span> { value, done } = <span class="kw">await this</span>.reader.read();
+        <span class="kw">if</span> (done) <span class="kw">break</span>;
+
+        <span class="kw">this</span>.stats.rx += value.byteLength;
+        <span class="kw">const</span> text = <span class="kw">this</span>.decoder.decode(value);
+        <span class="kw">this</span>.emit(<span class="str">"data"</span>, text);
+      }
+    } <span class="kw">finally</span> {
+      <span class="kw">this</span>.reader.releaseLock();
+    }
+  }
+}</div>
+        <div class="explain-side">
+          <p><strong>An "await" loop:</strong> <code>reader.read()</code> pauses until bytes arrive. No busy-waiting, no CPU waste.</p>
+          <p><span class="line-ref">Line 6</span> Each <code>read()</code> returns a <code>Uint8Array</code> of bytes and a <code>done</code> flag.</p>
+          <p><span class="line-ref">Line 9</span> Counts received bytes for the RX counter in the footer.</p>
+          <p><span class="line-ref">Line 10-11</span> Decodes bytes to text (UTF-8), then broadcasts via <code>serial:data</code> event.</p>
+          <p><span class="line-ref">Line 13</span> <code>finally</code> always releases the reader lock, even if an error occurs — preventing the port from getting stuck.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <strong>Baud rate mismatch = garbage!</strong> If the app uses 115200 baud but the device expects 9600, you'll see random characters instead of text. Both sides must agree on the same speed.
+    </div>
+
+    <div class="quiz" data-quiz="q4">
+      <h4>Quick Check</h4>
+      <p style="color:var(--text-muted);margin-bottom:12px">Why does <code>reader.read()</code> use <code>await</code>?</p>
+      <div class="quiz-options">
+        <button class="quiz-option">To slow down the data so humans can read it</button>
+        <button class="quiz-option" data-correct="true">It pauses efficiently until new data arrives without wasting CPU</button>
+        <button class="quiz-option">It encrypts the data before reading it</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== 5 · TERMINAL ======================== -->
+<section class="section" id="s-terminal" data-title="Terminal">
+  <div class="section-inner">
+    <div class="section-number">Chapter 5</div>
+    <h2>Displaying <span class="highlight">Colored Text</span></h2>
+    <p class="subtitle">When a device sends "Hello" in red, it doesn't send the word "red" — it sends invisible control codes. Here's how the terminal understands them.</p>
+
+    <div class="card">
+      <h3><span class="mod-badge terminal">terminal-renderer.js</span> — The Screen Painter</h3>
+      <p>The terminal has four types of output, each styled differently:</p>
+
+      <table class="compare-table">
+        <thead><tr><th>Type</th><th>Looks Like</th><th>Speed</th></tr></thead>
+        <tbody>
+          <tr><td><code>'normal'</code></td><td>Plain text, ANSI colors parsed</td><td>Batched (60fps)</td></tr>
+          <tr><td><code>'system'</code></td><td>[SYSTEM] prefix, muted style</td><td>Immediate</td></tr>
+          <tr><td><code>'error'</code></td><td>[ERROR] prefix, red style</td><td>Immediate</td></tr>
+          <tr><td><code>'echo'</code></td><td>Orange prompt style</td><td>Immediate</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>⚡ Smart Batching for Speed</h3>
+      <p>Serial devices can send thousands of tiny data chunks per second. Updating the screen for every single chunk would freeze the browser. The solution: <strong>batch rendering</strong>.</p>
+
+      <div class="code-explain">
+        <div class="code-side">print(text, type = <span class="str">"normal"</span>) {
+  <span class="kw">if</span> (type !== <span class="str">"normal"</span>) {
+    <span class="cmt">// System/error/echo: render NOW</span>
+    <span class="kw">this</span>.flushPending();
+    <span class="cmt">/* ... create DOM element immediately ... */</span>
+    <span class="kw">return</span>;
+  }
+
+  <span class="cmt">// Normal data: collect and wait</span>
+  <span class="kw">this</span>.pendingText += text;
+
+  <span class="kw">if</span> (!<span class="kw">this</span>.renderTimeout) {
+    <span class="kw">this</span>.renderTimeout = setTimeout(() => {
+      <span class="kw">this</span>.renderTimeout = <span class="kw">null</span>;
+      <span class="kw">this</span>.flushPending();
+    }, <span class="num">16</span>); <span class="cmt">// ~60fps</span>
+  }
+}</div>
+        <div class="explain-side">
+          <p><strong>Two fast lanes:</strong></p>
+          <p><span class="line-ref">Lines 2-7</span> System messages (like "Connected!") render immediately — they're rare and important.</p>
+          <p><span class="line-ref">Lines 10-17</span> Normal serial data piles up in <code>pendingText</code>. A timer fires every 16ms (~60fps) and dumps everything to screen at once.</p>
+          <p>If 100 tiny packets arrive in 16ms, the browser only does <strong>one</strong> DOM update instead of 100. This keeps scrolling smooth even at high data rates.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🎨 ANSI Color Codes — The Invisible Paint</h3>
+      <p>ANSI escape codes are invisible character sequences that tell a terminal "change the color now." They look like <code>ESC[31m</code> (red text) or <code>ESC[0m</code> (reset to default).</p>
+
+      <div class="code-explain">
+        <div class="code-side">ansiCodeToCss(code) {
+  <span class="kw">if</span> (code === <span class="num">1</span>)  <span class="kw">return</span> <span class="str">"font-weight: bold; "</span>;
+  <span class="kw">if</span> (code === <span class="num">3</span>)  <span class="kw">return</span> <span class="str">"font-style: italic; "</span>;
+  <span class="kw">if</span> (code === <span class="num">4</span>)  <span class="kw">return</span> <span class="str">"text-decoration: underline; "</span>;
+
+  <span class="kw">if</span> (code >= <span class="num">30</span> && code <= <span class="num">37</span>) {
+    <span class="kw">const</span> colors = [
+      <span class="str">"black"</span>,<span class="str">"red"</span>,<span class="str">"green"</span>,<span class="str">"yellow"</span>,
+      <span class="str">"blue"</span>,<span class="str">"magenta"</span>,<span class="str">"cyan"</span>,<span class="str">"white"</span>
+    ];
+    <span class="kw">return</span> <span class="str">`color: var(--ansi-${colors[code-30]}); `</span>;
+  }
+}</div>
+        <div class="explain-side">
+          <p><strong>Translating numbers to colors.</strong></p>
+          <p><span class="line-ref">Codes 1-4</span> Style modifiers: bold, italic, underline.</p>
+          <p><span class="line-ref">Codes 30-37</span> The standard 8 foreground colors. Code 31 = red, 32 = green, etc.</p>
+          <p>Instead of hardcoding hex colors, it uses <strong>CSS variables</strong> like <code>--ansi-red</code>. This means the colors automatically adapt to the current theme (light or dark).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <strong>Buffer limit:</strong> The terminal caps at 5,000 lines. Once exceeded, it removes the oldest third of content to prevent the browser from slowing down with a massive DOM.
+    </div>
+  </div>
+</section>
+
+<!-- ======================== 6 · INPUT ======================== -->
+<section class="section" id="s-input" data-title="Input">
+  <div class="section-inner">
+    <div class="section-number">Chapter 6</div>
+    <h2>Two Ways to <span class="highlight">Type</span></h2>
+    <p class="subtitle">The app offers two input experiences: Modern mode (like a chat app) and Traditional mode (like a real terminal).</p>
+
+    <div class="card">
+      <h3><span class="mod-badge input">input-handler.js</span> — Mode Switcher</h3>
+
+      <table class="compare-table">
+        <thead><tr><th>Feature</th><th>Modern Mode</th><th>Traditional Mode</th></tr></thead>
+        <tbody>
+          <tr><td>Input area</td><td>Separate text box + Send button</td><td>Type directly into the terminal</td></tr>
+          <tr><td>When data is sent</td><td>On Enter press (whole line)</td><td>Each keystroke, immediately</td></tr>
+          <tr><td>Cursor</td><td>In the text box</td><td>Blinking block in terminal output</td></tr>
+          <tr><td>Best for</td><td>Command-response devices</td><td>Interactive shells (Linux, REPL)</td></tr>
+          <tr><td>History</td><td>↑/↓ arrows recall past commands</td><td>Not available</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>💬 Modern Mode — Type, Then Send</h3>
+      <div class="code-explain">
+        <div class="code-side">sendModern() {
+  <span class="kw">const</span> text = <span class="kw">this</span>.inputElement.value;
+  <span class="kw">if</span> (!text) <span class="kw">return</span>;
+
+  <span class="cmt">// Save to history for ↑/↓ recall</span>
+  window.Config.addHistory(text);
+  <span class="kw">this</span>.historyIndex = -<span class="num">1</span>;
+
+  <span class="cmt">// Append line ending (e.g., \r\n)</span>
+  <span class="kw">const</span> payload = text + window.Config.get(<span class="str">"lineEnding"</span>);
+  <span class="kw">this</span>.transmit(payload);
+
+  <span class="cmt">// Show what we sent (local echo)</span>
+  <span class="kw">if</span> (window.Config.get(<span class="str">"localEcho"</span>)) {
+    window.Terminal.print(payload, <span class="str">"echo"</span>);
+  }
+
+  <span class="kw">this</span>.inputElement.value = <span class="str">""</span>;
+}</div>
+        <div class="explain-side">
+          <p><strong>What happens when you hit Enter:</strong></p>
+          <p><span class="line-ref">Line 5-6</span> The command is saved to history (max 50 entries) so you can recall it with ↑/↓ arrows.</p>
+          <p><span class="line-ref">Line 9-10</span> A line ending (<code>\r\n</code> by default) is appended — most devices expect this to know "the command is complete."</p>
+          <p><span class="line-ref">Line 13-15</span> <strong>Local echo</strong> — if enabled, your own text appears in the terminal so you can see what you sent. Some devices echo back themselves; others don't.</p>
+          <p><span class="line-ref">Line 17</span> Clears the input box for the next command.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>⌨️ Traditional Mode — Live Keystrokes</h3>
+      <p>In traditional mode, each key you press is sent <em>immediately</em> — no Enter needed. This is how classic terminals work:</p>
+
+      <div class="code-explain">
+        <div class="code-side">handleTraditionalInput(e) {
+  <span class="cmt">// Regular character → send immediately</span>
+  <span class="kw">if</span> (e.key.length === <span class="num">1</span>) {
+    <span class="kw">this</span>.sendKeystroke(e.key);
+  }
+
+  <span class="cmt">// Enter → send the line ending</span>
+  <span class="kw">else if</span> (e.key === <span class="str">"Enter"</span>) {
+    <span class="kw">this</span>.sendKeystroke(
+      window.Config.get(<span class="str">"lineEnding"</span>)
+    );
+  }
+
+  <span class="cmt">// Backspace → send DEL byte (0x7F)</span>
+  <span class="kw">else if</span> (e.key === <span class="str">"Backspace"</span>) {
+    <span class="kw">this</span>.sendControlSequence(<span class="num">0x7F</span>);
+  }
+}</div>
+        <div class="explain-side">
+          <p><strong>Every key = one serial transmission.</strong></p>
+          <p><span class="line-ref">Line 3-4</span> Single printable characters (letters, numbers, symbols) are sent one at a time.</p>
+          <p><span class="line-ref">Line 8-11</span> Enter sends the configured line ending sequence.</p>
+          <p><span class="line-ref">Line 15-16</span> Backspace sends the DEL byte (<code>0x7F</code>) — this is the standard "erase" signal in serial communication.</p>
+          <p>Ctrl+C (<code>0x03</code>) and Ctrl+Z (<code>0x1A</code>) are also handled for interrupting running programs.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz" data-quiz="q5">
+      <h4>Quick Check</h4>
+      <p style="color:var(--text-muted);margin-bottom:12px">In Traditional mode, when is data sent to the device?</p>
+      <div class="quiz-options">
+        <button class="quiz-option">When the user clicks the Send button</button>
+        <button class="quiz-option">When the user presses Enter</button>
+        <button class="quiz-option" data-correct="true">Immediately on every keystroke</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== 7 · PLOTTER ======================== -->
+<section class="section" id="s-plotter" data-title="Plotter">
+  <div class="section-inner">
+    <div class="section-number">Chapter 7</div>
+    <h2>Graphing Data <span class="highlight">In Real Time</span></h2>
+    <p class="subtitle">Plug in a temperature sensor and watch the line graph draw itself live — the plotter turns serial text into visual charts.</p>
+
+    <div class="card">
+      <h3><span class="mod-badge plotter">plotter.js</span> — The Visualizer</h3>
+      <p>The plotter listens to the same <code>serial:data</code> event as the terminal. It expects data in a simple format:</p>
+
+      <div class="code-block"><span class="cmt">// Format 1: Labeled values</span>
+<span class="str">temperature:23.5,humidity:68.2</span>
+
+<span class="cmt">// Format 2: Just numbers (auto-named Channel 1, 2, etc.)</span>
+<span class="str">23.5,68.2,1013.4</span>
+
+<span class="cmt">// Each line = one data point for all channels</span></div>
+    </div>
+
+    <div class="card">
+      <h3>📥 How Data Gets Parsed</h3>
+      <p>Serial data arrives in unpredictable chunks (not neat lines). The plotter handles this gracefully:</p>
+
+      <div class="code-explain">
+        <div class="code-side">ingestChunk(chunk) {
+  <span class="cmt">// On first connect, skip partial line</span>
+  <span class="kw">if</span> (<span class="kw">this</span>.awaitingFrameSync) {
+    <span class="kw">const</span> idx = chunk.indexOf(<span class="str">"\n"</span>);
+    <span class="kw">if</span> (idx === -<span class="num">1</span>) <span class="kw">return</span>;
+    chunk = chunk.slice(idx + <span class="num">1</span>);
+    <span class="kw">this</span>.awaitingFrameSync = <span class="kw">false</span>;
+  }
+
+  <span class="cmt">// Join with leftover from last chunk</span>
+  <span class="kw">const</span> merged = <span class="kw">this</span>.bufferRemainder + chunk;
+  <span class="kw">const</span> lines = merged.split(<span class="str">/\r?\n/</span>);
+
+  <span class="cmt">// Last piece might be incomplete</span>
+  <span class="kw">this</span>.bufferRemainder = lines.pop();
+
+  <span class="cmt">// Process complete lines</span>
+  lines.forEach(line => <span class="kw">this</span>.parseAndIngestLine(line));
+}</div>
+        <div class="explain-side">
+          <p><strong>Handling messy, chunked data.</strong></p>
+          <p><span class="line-ref">Lines 2-8</span> <strong>Frame sync:</strong> When first connected, the first chunk might be half a line (e.g., <code>"ure:23\n"</code>). The plotter discards everything before the first newline.</p>
+          <p><span class="line-ref">Lines 11-12</span> Joins the remainder from the previous chunk with the new chunk, then splits by newlines.</p>
+          <p><span class="line-ref">Line 15</span> The last element after splitting might be an incomplete line, so it's saved for next time.</p>
+          <p><span class="line-ref">Line 18</span> Only complete lines get parsed into channel data points.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🖌️ Drawing the Chart</h3>
+      <p>The plotter uses an HTML <code>&lt;canvas&gt;</code> element and draws everything from scratch 60 times per second — but <strong>only when data changes</strong> (dirty flag optimization).</p>
+      <ul>
+        <li><strong>Pan & Zoom:</strong> Scroll wheel zooms X axis, Ctrl+scroll zooms Y axis, drag to pan</li>
+        <li><strong>Auto-follow:</strong> Chart scrolls with live data. Drag to detach; double-click to snap back</li>
+        <li><strong>Multi-channel:</strong> Up to 8 color-coded channels with toggle-able legend</li>
+        <li><strong>Interpolation:</strong> Toggle between stepped and smooth line drawing</li>
+        <li><strong>Crosshair tooltip:</strong> Hover to see exact values at any point</li>
+      </ul>
+    </div>
+
+    <div class="callout tip">
+      <strong>Max samples:</strong> The plotter keeps up to 2,000 data points per channel (configurable). Older data is discarded to keep memory usage constant.
+    </div>
+  </div>
+</section>
+
+<!-- ======================== 8 · APP ======================== -->
+<section class="section" id="s-app" data-title="App Wiring">
+  <div class="section-inner">
+    <div class="section-number">Chapter 8</div>
+    <h2>Wiring It <span class="highlight">All Together</span></h2>
+    <p class="subtitle">The app.js file is the conductor of the orchestra — it doesn't play any instrument, but it tells everyone when to start.</p>
+
+    <div class="card">
+      <h3><span class="mod-badge app">app.js</span> — The Orchestrator</h3>
+      <p>When the page loads, app.js does three things:</p>
+
+      <div class="flow-demo">
+        <div class="flow-steps">
+          <div class="flow-step"><span class="icon">1️⃣</span>Load settings<br>into UI</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><span class="icon">2️⃣</span>Wire button<br>click handlers</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><span class="icon">3️⃣</span>Listen for<br>serial events</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🔗 The Connection Flow</h3>
+      <p>Here's what happens end-to-end when you click "Connect":</p>
+
+      <div class="code-explain">
+        <div class="code-side">btnConnect.addEventListener(<span class="str">"click"</span>, <span class="kw">async</span> () => {
+  <span class="cmt">// 1. Gather settings</span>
+  <span class="kw">const</span> options = {
+    baudRate: Config.get(<span class="str">"baudRate"</span>),
+    dataBits: Config.get(<span class="str">"dataBits"</span>),
+    <span class="cmt">/* ... more settings ... */</span>
+  };
+
+  <span class="cmt">// 2. Connect via Serial module</span>
+  <span class="kw">await</span> Serial.connect(options);
+
+  <span class="cmt">// 3. Update UI</span>
+  btnConnect.classList.add(<span class="str">"hidden"</span>);
+  btnDisconnect.classList.remove(<span class="str">"hidden"</span>);
+  statusIndicator.className = <span class="str">"status-dot online"</span>;
+
+  <span class="cmt">// 4. Disable settings while connected</span>
+  baudRate.disabled = <span class="kw">true</span>;
+});
+
+<span class="cmt">// 5. React to incoming data</span>
+window.addEventListener(<span class="str">"serial:data"</span>, (e) => {
+  Terminal.print(e.detail, <span class="str">"normal"</span>);
+});</div>
+        <div class="explain-side">
+          <p><strong>The orchestration pattern:</strong></p>
+          <p><span class="line-ref">Step 1</span> Read current settings from Config.</p>
+          <p><span class="line-ref">Step 2</span> Pass them to Serial.connect() which triggers the browser's device picker.</p>
+          <p><span class="line-ref">Step 3</span> Swap the Connect/Disconnect buttons, update the status dot to green.</p>
+          <p><span class="line-ref">Step 4</span> Disable baud rate and other settings — you can't change these while connected.</p>
+          <p><span class="line-ref">Step 5</span> Listen for data events and route them to the terminal.</p>
+          <p>Notice how app.js just wires modules together — it doesn't contain any serial logic or rendering logic itself.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🎨 Theme Switching</h3>
+      <p>Dark/light mode is surprisingly simple — just one HTML attribute change:</p>
+      <div class="code-block"><span class="cmt">// Toggle between dark and light</span>
+document.documentElement.setAttribute(<span class="str">"data-theme"</span>, <span class="str">"dark"</span>);
+<span class="cmt">// or</span>
+document.documentElement.setAttribute(<span class="str">"data-theme"</span>, <span class="str">"light"</span>);
+
+<span class="cmt">// All colors are CSS variables that change per theme</span>
+<span class="cmt">// e.g., --bg-base, --text-main, --accent-primary</span></div>
+      <p>The CSS file <code>themes.css</code> defines two sets of color variables — one for <code>:root</code> (light) and one for <code>[data-theme="dark"]</code>. Switching the attribute instantly repaints the entire app.</p>
+    </div>
+
+    <div class="quiz" data-quiz="q6">
+      <h4>Quick Check</h4>
+      <p style="color:var(--text-muted);margin-bottom:12px">What is app.js responsible for?</p>
+      <div class="quiz-options">
+        <button class="quiz-option">Parsing serial data and rendering ANSI colors</button>
+        <button class="quiz-option">Managing the Web Serial API connection</button>
+        <button class="quiz-option" data-correct="true">Wiring modules together — connecting UI events to the right module calls</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== 9 · PWA ======================== -->
+<section class="section" id="s-pwa" data-title="PWA & Offline">
+  <div class="section-inner">
+    <div class="section-number">Chapter 9</div>
+    <h2>Works <span class="highlight">Offline</span> Too</h2>
+    <p class="subtitle">Once loaded, the app works without internet — and you can install it like a native app. That's the power of Progressive Web Apps.</p>
+
+    <div class="card">
+      <h3><span class="mod-badge sw">service-worker.js</span> — The Offline Guardian</h3>
+      <p>A service worker is a script that runs in the background, separate from the web page. It intercepts every network request and can serve cached copies when offline.</p>
+
+      <div class="code-explain">
+        <div class="code-side"><span class="cmt">// Install: cache all static files</span>
+self.addEventListener(<span class="str">"install"</span>, (event) => {
+  event.waitUntil(
+    caches.open(CACHE_VERSION).then(cache =>
+      cache.addAll([
+        <span class="str">"./index.html"</span>,
+        <span class="str">"./js/app.js"</span>,
+        <span class="str">"./js/config.js"</span>,
+        <span class="str">"./styles/main.css"</span>,
+        <span class="cmt">/* ... all files ... */</span>
+      ])
+    )
+  );
+});
+
+<span class="cmt">// Fetch: try network first, fall back to cache</span>
+self.addEventListener(<span class="str">"fetch"</span>, (event) => {
+  event.respondWith(
+    fetch(request)
+      .then(response => {
+        <span class="cmt">// Got it! Cache for next time</span>
+        cache.put(request, response.clone());
+        <span class="kw">return</span> response;
+      })
+      .catch(() => {
+        <span class="cmt">// Offline! Serve from cache</span>
+        <span class="kw">return</span> caches.match(request);
+      })
+  );
+});</div>
+        <div class="explain-side">
+          <p><strong>Two-phase offline strategy:</strong></p>
+          <p><span class="line-ref">Install</span> When you first visit, the service worker downloads and caches every file the app needs.</p>
+          <p><span class="line-ref">Fetch</span> On subsequent visits, it uses a <strong>network-first</strong> strategy:</p>
+          <ol style="padding-left:20px;color:var(--text-muted)">
+            <li>Try to fetch from the network (get latest version)</li>
+            <li>If successful, update the cache</li>
+            <li>If offline, serve the cached copy</li>
+          </ol>
+          <p>The cache version includes today's date, so it auto-invalidates daily — ensuring you always get updates when online.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📲 Install as an App</h3>
+      <p>The <code>manifest.json</code> file tells the browser "this website can be installed." It defines the app name, icons, theme color, and display mode. When Chrome detects a manifest + service worker, it offers an "Install" prompt.</p>
+      <p>Once installed, the app gets its own window (no browser toolbar), its own icon in the taskbar, and launches instantly — just like a native desktop app.</p>
+    </div>
+
+    <div class="quiz" data-quiz="q7">
+      <h4>Quick Check</h4>
+      <p style="color:var(--text-muted);margin-bottom:12px">What caching strategy does the service worker use?</p>
+      <div class="quiz-options">
+        <button class="quiz-option">Cache-only — never checks the network</button>
+        <button class="quiz-option" data-correct="true">Network-first — tries the network, falls back to cache if offline</button>
+        <button class="quiz-option">No caching — always requires internet</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== 10 · WRAP-UP ======================== -->
+<section class="section" id="s-wrapup" data-title="Wrap Up">
+  <div class="section-inner" style="text-align:center">
+    <div class="section-number" style="justify-content:center">Congratulations!</div>
+    <h2>You Made It! 🎉</h2>
+    <p class="subtitle" style="margin:0 auto 40px">You now understand how a real browser-based serial terminal works — from USB byte streams to colored text rendering.</p>
+
+    <div class="score-card">
+      <div class="score-ring" id="score-display">0/7</div>
+      <p class="score-label">Quiz Score</p>
+      <p style="color:var(--text-muted);margin-top:16px;font-size:14px">Scroll back up to answer any quizzes you missed!</p>
+    </div>
+
+    <div class="card" style="text-align:left">
+      <h3>🧠 Key Takeaways</h3>
+      <ul>
+        <li><strong>Event-driven architecture</strong> keeps modules independent and extensible</li>
+        <li><strong>Config persistence</strong> via localStorage with deep-merge prevents data loss on updates</li>
+        <li><strong>Web Serial API</strong> provides browser-native USB access with user consent</li>
+        <li><strong>Batched rendering</strong> at 60fps prevents DOM thrashing during high data rates</li>
+        <li><strong>ANSI parsing</strong> translates invisible control codes into CSS-styled spans</li>
+        <li><strong>Canvas-based plotter</strong> with dirty-flag optimization only redraws when needed</li>
+        <li><strong>Service workers</strong> enable offline support and installability as a PWA</li>
+      </ul>
+    </div>
+
+    <div class="card" style="text-align:left">
+      <h3>🔗 Explore Further</h3>
+      <ul>
+        <li><a href="https://github.com/Shoaibashk/web.serial" target="_blank">View the source code on GitHub</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API" target="_blank">MDN: Web Serial API documentation</a></li>
+        <li><a href="https://web.dev/progressive-web-apps/" target="_blank">web.dev: Progressive Web Apps guide</a></li>
+      </ul>
+    </div>
+
+    <p style="color:var(--text-dim);font-size:13px;margin-top:48px">
+      Course generated from the <a href="https://github.com/Shoaibashk/web.serial">Web Serial Terminal</a> codebase.
+    </p>
+  </div>
+</section>
+
+<!-- ======================== SCRIPTS ======================== -->
+<script>
+(function() {
+  // ---- NAV LINKS ----
+  const sections = document.querySelectorAll('.section[data-title]');
+  const navLinks = document.getElementById('nav-links');
+  sections.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-link';
+    btn.textContent = s.dataset.title;
+    btn.onclick = () => s.scrollIntoView({ behavior: 'smooth' });
+    navLinks.appendChild(btn);
+  });
+
+  // ---- SCROLL OBSERVER: Reveal sections + update nav ----
+  const allSections = document.querySelectorAll('.section, .hero');
+  const navBtns = navLinks.querySelectorAll('.nav-link');
+  const progressBar = document.getElementById('nav-progress');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+  allSections.forEach(s => observer.observe(s));
+
+  // Active nav + progress
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = Math.min(100, (scrollY / docH) * 100);
+    progressBar.style.width = pct + '%';
+
+    let activeIdx = -1;
+    sections.forEach((s, i) => {
+      if (scrollY >= s.offsetTop - 200) activeIdx = i;
+    });
+    navBtns.forEach((b, i) => b.classList.toggle('active', i === activeIdx));
+  });
+
+  // ---- QUIZZES ----
+  let totalQuizzes = 0;
+  let correctAnswers = 0;
+  const answered = new Set();
+
+  document.querySelectorAll('.quiz').forEach(quiz => {
+    totalQuizzes++;
+    const qid = quiz.dataset.quiz;
+    const feedback = quiz.querySelector('.quiz-feedback');
+    const options = quiz.querySelectorAll('.quiz-option');
+
+    options.forEach(opt => {
+      opt.addEventListener('click', () => {
+        if (answered.has(qid)) return; // already answered
+        answered.add(qid);
+
+        const isCorrect = opt.hasAttribute('data-correct');
+
+        options.forEach(o => {
+          o.style.pointerEvents = 'none';
+          if (o.hasAttribute('data-correct')) o.classList.add('correct');
+          else if (o === opt && !isCorrect) o.classList.add('wrong');
+        });
+
+        feedback.classList.add('show');
+        if (isCorrect) {
+          correctAnswers++;
+          feedback.className = 'quiz-feedback show correct';
+          feedback.textContent = '✅ Correct! Well done.';
+        } else {
+          feedback.className = 'quiz-feedback show wrong';
+          feedback.textContent = '❌ Not quite — the highlighted answer is correct.';
+        }
+        updateScore();
+      });
+    });
+  });
+
+  function updateScore() {
+    const el = document.getElementById('score-display');
+    if (el) el.textContent = correctAnswers + '/' + totalQuizzes;
+  }
+  updateScore();
+})();
+</script>
+</body>
+</html>
