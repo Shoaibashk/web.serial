@@ -5,14 +5,15 @@
 A modern, serverless, browser-based terminal interface for serial communication using the Web Serial API. **No build step required**—served as static files (HTML, CSS, JS).
 
 - **Supported Browsers**: Chrome 89+, Edge 89+, Opera 75+ (desktop, HTTPS or localhost only)
-- **Architecture**: Vanilla ES6 modules, no external dependencies
+- **Architecture**: Vanilla ES6 modules, no runtime JS dependencies (Google Fonts loaded via CSS)
 - **Deployment**: GitHub Pages or any static host (HTTPS required for Web Serial API)
+- **PWA**: Installable as a Progressive Web App (service worker + manifest)
 
 ## Code Style
 
 ### Vanilla ES6 & Global Namespace Pattern
 
-All modules expose classes on `window` (e.g., `window.Config`, `window.Serial`, `window.Terminal`, `window.Input`):
+All modules expose classes on `window` (e.g., `window.Config`, `window.Serial`, `window.Terminal`, `window.Input`, `window.Plotter`):
 
 ```javascript
 class Config {
@@ -46,14 +47,15 @@ window.Config = new Config();
 | `serial-manager.js`    | Web Serial API wrapper                  | `Serial` class (events: `connected`, `data`, `disconnected`, `error`) |
 | `terminal-renderer.js` | ANSI color parsing & DOM rendering      | `Terminal` class (5000-line buffer max)                               |
 | `input-handler.js`     | Two UI modes (Modern, Traditional)      | `Input` class (handles mode switching)                                |
-| `app.js`               | Main orchestration & event coordination | App initialization & UI wiring                                        |
+| `plotter.js`           | Real-time serial data plotter (canvas)  | `Plotter` class (pan/zoom, multi-channel, CSV parsing)                |
+| `app.js`               | Main orchestration & event coordination | App initialization, UI wiring, tab switching                          |
 
 ### Inter-Module Communication
 
 All modules communicate via **custom DOM events** dispatched on `window`:
 
 - `serial:connected` — Device connected (detail: `{usbVendorId, usbProductId}`)
-- `serial:data` — Data received (carries `event.detail` as decoded string)
+- `serial:data` — Data received (`event.detail` is the decoded string directly)
 - `serial:disconnected` — Device disconnected
 - `serial:error` — Read/write error (detail: `Error` object)
 - `serial:stats` — Byte count update (detail: `{rx, tx}`)
@@ -63,7 +65,7 @@ Example:
 
 ```javascript
 window.addEventListener("serial:data", (e) => {
-  console.log("Received:", e.detail.data);
+  console.log("Received:", e.detail); // e.detail is the string directly
 });
 ```
 
@@ -118,7 +120,7 @@ No formal test framework. Validate manually in supported browsers (Chrome, Edge,
 ### Modifying Styles
 
 - Edit `main.css` for layout/component styles
-- Edit `themes.css` for color variables (theme vars use pattern `--ansi-*` for terminal colors, `--color-bg-primary` etc. for UI)
+- Edit `themes.css` for color variables (theme vars use pattern `--ansi-*` for terminal colors, `--bg-base`/`--bg-surface`/`--text-main` etc. for UI, `--plotter-*` for plotter)
 - Switch themes dynamically via `document.documentElement.setAttribute('data-theme', 'dark'|'light')`
 
 ### Adding a Config Setting
@@ -147,16 +149,20 @@ No formal test framework. Validate manually in supported browsers (Chrome, Edge,
 - **Clear all storage**: `localStorage.clear()` → resets saved commands & settings
 - **Print to terminal**: `window.Terminal.print('msg', 'system')` → types: `'normal'`, `'system'`, `'error'`, `'echo'`
 - **Check RX/TX stats**: `window.Serial.stats` → `{rx, tx}` byte counts
+- **Check plotter state**: `window.Plotter.running` → boolean, `window.Plotter.channels` → Map of channel data
 
 ## Key Files at a Glance
 
 - **index.html** — Single HTML entry point; includes all JS/CSS
-- **js/app.js** — ~450 lines; initialization, event wiring, UI state
+- **js/app.js** — ~340 lines; initialization, event wiring, UI state, tab switching
 - **js/serial-manager.js** — Web Serial API wrapper, device read/write loop
 - **js/terminal-renderer.js** — ANSI parser, DOM updates, 5000-line buffer
 - **js/input-handler.js** — Modern (separate input) vs. Traditional (prompt-style) mode switching
+- **js/plotter.js** — ~700 lines; canvas-based serial plotter with pan/zoom, multi-channel CSV parsing
 - **js/config.js** — localStorage abstraction with merge defaults
-- **styles/main.css** — Layout, components, responsive design
-- **styles/themes.css** — Light/dark mode color definitions
+- **styles/main.css** — Layout, components, responsive design (~920 lines)
+- **styles/themes.css** — Light/dark mode color definitions + ANSI terminal colors
+- **service-worker.js** — PWA offline caching
+- **manifest.json** — PWA manifest for installability
 
 See [README.md](../README.md) for feature overview and user guide.

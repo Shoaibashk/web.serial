@@ -30,6 +30,7 @@ class PlotterRenderer {
     this.running = true;
     this.isDirty = true;
     this.bufferRemainder = "";
+    this.awaitingFrameSync = true;
 
     this.interpolate = !!window.Config.get("plotterInterpolate");
     this.interpolateToggle.checked = this.interpolate;
@@ -88,6 +89,14 @@ class PlotterRenderer {
       if (!this.running) return;
       if (typeof event.detail !== "string") return;
       this.ingestChunk(event.detail);
+    });
+
+    window.addEventListener("serial:connected", () => {
+      this.resetStreamState();
+    });
+
+    window.addEventListener("serial:disconnected", () => {
+      this.resetStreamState();
     });
 
     this.resizeObserver = new ResizeObserver(() => {
@@ -241,8 +250,31 @@ class PlotterRenderer {
     this.runButton.classList.add("paused");
   }
 
+  resetStreamState() {
+    this.bufferRemainder = "";
+    this.awaitingFrameSync = true;
+  }
+
   ingestChunk(chunk) {
-    const merged = this.bufferRemainder + chunk;
+    let normalizedChunk = chunk;
+
+    // On a fresh serial session, drop bytes until first newline to avoid
+    // creating channels from a leading partial frame fragment.
+    if (this.awaitingFrameSync) {
+      const firstNewlineIndex = normalizedChunk.indexOf("\n");
+      if (firstNewlineIndex === -1) {
+        return;
+      }
+
+      normalizedChunk = normalizedChunk.slice(firstNewlineIndex + 1);
+      this.awaitingFrameSync = false;
+    }
+
+    if (!normalizedChunk) {
+      return;
+    }
+
+    const merged = this.bufferRemainder + normalizedChunk;
     const lines = merged.split(/\r?\n/);
 
     this.bufferRemainder = lines.pop() || "";
@@ -350,7 +382,7 @@ class PlotterRenderer {
   clear() {
     this.channels.clear();
     this.sampleCount = 0;
-    this.bufferRemainder = "";
+    this.resetStreamState();
     this.viewFollowing = true;
     this.yLocked = false;
     this.updateLiveBadge();
