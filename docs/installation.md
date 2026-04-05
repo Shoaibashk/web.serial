@@ -1,6 +1,6 @@
 # Installation
 
-Web Serial Terminal is a static site. There is no build step and no package install required.
+Web.Serial is a static site. There is no build step and no package install required.
 
 ## Browser support
 

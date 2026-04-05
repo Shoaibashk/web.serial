@@ -1,6 +1,6 @@
 # Architecture
 
-Web Serial Terminal uses vanilla ES6 modules and a global namespace pattern for simplicity and zero dependencies.
+Web.Serial uses vanilla ES6 modules and a global namespace pattern for simplicity and zero dependencies.
 
 ## Core modules
 

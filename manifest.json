@@ -1,5 +1,5 @@
 {
-  "name": "Web Serial Terminal",
+  "name": "Web.Serial",
   "short_name": "Serial Terminal",
   "description": "A modern, browser-based terminal interface for serial communication using the Web Serial API",
   "start_url": ".",

@@ -1,6 +1,16 @@
-# Web Serial Terminal
+<h1 align="center">Web.Serial</h1>
+<p align="center">
+	<a href="https://github.com/Shoaibashk/web.serial/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
+	<a href="https://github.com/Shoaibashk/web.serial"><img src="https://img.shields.io/badge/maintained-yes-brightgreen.svg" alt="Maintained"></a>
+	<a href="https://github.com/Shoaibashk/web.serial"><img src="https://img.shields.io/badge/format-vanilla%20ES6-blue.svg" alt="Vanilla ES6"></a>
+</p>
 
-A browser-based terminal for communicating with serial devices through the Web Serial API. The project is static, requires no build step, and is designed to stay simple for new users while still giving contributors enough structure to extend it.
+<p align="center">
+	<!-- Add your screenshot image.png here -->
+	<img src="./docs/main.png" alt="Web.Serial screenshot" width="720" style="max-width:100%;height:auto;"/>
+</p>
+
+A modern, serverless browser terminal for serial communication using the Web Serial API. This lightweight project requires no build step and is production-ready for deployment as static files (HTTPS or localhost required for the Web Serial API).
 
 ## Quick Start
 
@@ -31,9 +41,9 @@ Open `http://localhost:3000` after starting the server.
 - [Contributing](docs/contributing.md)
 - [Troubleshooting](docs/troubleshooting.md)
 
-## Contributor requirement
+## Contributing
 
-This project requires that all code submitted via pull request be generated using vibecoding. Manually typed code is not accepted for PRs. Please ensure your PRs are produced with vibecoding before opening.
+Contributions are welcome — please see the [Contributing](docs/contributing.md) guide for workflow and style rules. When applicable, follow the project's code-generation workflow (vibecoding) and include a clear description of changes, testing steps, and any manual verification required.
 
 ## Support
 

@@ -1,6 +1,6 @@
 # Features
 
-Web Serial Terminal is built to stay lightweight while still covering the most common serial workflows.
+Web.Serial is built to stay lightweight while still covering the most common serial workflows.
 
 ## Core capabilities
 

@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
     applyTheme(savedTheme);
 
     window.Terminal.print(
-      "Web Serial Terminal initialized. Ready to connect.",
+      "Web.Serial initialized. Ready to connect.",
       "system",
     );
   }

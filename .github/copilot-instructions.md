@@ -1,4 +1,4 @@
-# Web Serial Terminal — Workspace Guidelines
+# Web.Serial — Workspace Guidelines
 
 ## Project Overview
 
