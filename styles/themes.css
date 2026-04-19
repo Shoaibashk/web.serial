@@ -8,116 +8,186 @@
 /* === LIGHT THEME (CSS base) === */
 :root {
     /* Backgrounds */
-    --bg-base: #f5f5f5;
-    --bg-surface: #ffffff;
-    --bg-panel: #f0f0f0;
-    --bg-elevated: #ebebeb;
+    --bg-base: #f5f4ed;
+    /* Parchment */
+    --bg-surface: #faf9f5;
+    /* Ivory */
+    --bg-panel: #f5f4ed;
+    /* Parchment */
+    --bg-elevated: #ffffff;
+    /* Pure White */
     --bg-input: #ffffff;
-    --bg-sidebar: #fafafa;
-    --border-color: #e0e0e0;
-    --border-subtle: #efefef;
+    /* Pure White */
+    --bg-sidebar: #f5f4ed;
+    /* Parchment */
+    --border-color: #e8e6dc;
+    /* Border Warm */
+    --border-subtle: #f0eee6;
+    /* Border Cream */
 
     /* Text */
-    --text-main: #191919;
-    --text-muted: #6e6e6e;
-    --text-placeholder: #a0a0a0;
+    --text-main: #141413;
+    /* Near Black */
+    --text-muted: #5e5d59;
+    /* Olive Gray */
+    --text-placeholder: #87867f;
+    /* Stone Gray */
 
-    /* Accent — Postman Orange */
-    --accent-primary: #f06524;
-    --accent-primary-hover: #e05510;
-    --accent-primary-dim: rgba(240, 101, 36, 0.08);
+    /* Accent — Terracotta Brand */
+    --accent-primary: #c96442;
+    --accent-primary-hover: #d97757;
+    /* Coral Accent */
+    --accent-primary-dim: rgba(201, 100, 66, 0.08);
 
     /* Danger */
-    --accent-danger: #ee3442;
-    --accent-danger-hover: #c62333;
+    --accent-danger: #b53333;
+    /* Error Crimson */
+    --accent-danger-hover: #9c2b2b;
+
+    /* Focus */
+    --accent-focus: #3898ec;
+    /* Focus Blue */
+
+    /* Shadows / Rings */
+    --ring-subtle: #d1cfc5;
+    /* Secondary ring for interactive — mapping correctly */
+    --ring-warm: #d1cfc5;
+    --ring-deep: #c2c0b6;
 
     /* Status */
     --status-online: #1a7f37;
-    --status-offline: #9e9e9e;
-    --status-error: #ee3442;
+    --status-offline: #87867f;
+    /* Stone Gray */
+    --status-error: #b53333;
+    /* Error Crimson */
 
     /* Run/Live (plotter) */
     --accent-run: #1a7f37;
     --accent-run-hover: #156d2f;
 
     /* Terminal — stays dark in both themes */
-    --term-bg: #111111;
-    --term-text: #d4d4d4;
-    --term-prompt: #f06524;
-    --term-sys: #6e6e6e;
-    --term-err: #f85149;
+    --term-bg: #141413;
+    /* Near Black */
+    --term-text: #b0aea5;
+    /* Warm Silver */
+    --term-prompt: #c96442;
+    /* Terracotta */
+    --term-sys: #87867f;
+    /* Stone Gray */
+    --term-err: #b53333;
+    /* Error Crimson */
 
     /* Plotter (light) */
-    --plotter-bg: #f8f8f8;
-    --plotter-grid: rgba(0, 0, 0, 0.07);
-    --plotter-axis: rgba(0, 0, 0, 0.2);
-    --plotter-label: #6e6e6e;
-    --plotter-crosshair: rgba(0, 0, 0, 0.2);
-    --plotter-tooltip-bg: rgba(255, 255, 255, 0.96);
-    --plotter-tooltip-border: rgba(0, 0, 0, 0.12);
-    --plotter-tooltip-text: #191919;
-    --plotter-dot-stroke: rgba(250, 250, 250, 0.95);
-    --plotter-toolbar-bg: #f0f0f0;
-    --plotter-toolbar-text: #191919;
-    --plotter-toolbar-item-text: #6e6e6e;
-    --plotter-toolbar-border: rgba(0, 0, 0, 0.08);
-    --plotter-canvas-wrap-bg: #f0f0f0;
+    --plotter-bg: #faf9f5;
+    /* Ivory */
+    --plotter-grid: rgba(20, 20, 19, 0.05);
+    /* slightly warm black */
+    --plotter-axis: rgba(20, 20, 19, 0.15);
+    --plotter-label: #5e5d59;
+    /* Olive Gray */
+    --plotter-crosshair: rgba(20, 20, 19, 0.2);
+    --plotter-tooltip-bg: rgba(250, 249, 245, 0.96);
+    /* Ivory */
+    --plotter-tooltip-border: #e8e6dc;
+    /* Border Warm */
+    --plotter-tooltip-text: #141413;
+    /* Near Black */
+    --plotter-dot-stroke: #faf9f5;
+    /* Ivory */
+    --plotter-toolbar-bg: #f5f4ed;
+    /* Parchment */
+    --plotter-toolbar-text: #141413;
+    /* Near Black */
+    --plotter-toolbar-item-text: #5e5d59;
+    /* Olive Gray */
+    --plotter-toolbar-border: #e8e6dc;
+    /* Border Warm */
+    --plotter-canvas-wrap-bg: #f5f4ed;
+    /* Parchment */
 }
 
 /* === DARK THEME (App default — applied via data-theme="dark" on <html>) === */
 [data-theme="dark"] {
     /* Backgrounds */
-    --bg-base: #1c1c1c;
-    --bg-surface: #242424;
-    --bg-panel: #2a2a2a;
-    --bg-elevated: #2f2f2f;
-    --bg-input: #1c1c1c;
-    --bg-sidebar: #141414;
-    --border-color: #333333;
-    --border-subtle: #2a2a2a;
+    --bg-base: #141413;
+    /* Near Black */
+    --bg-surface: #30302e;
+    /* Dark Surface */
+    --bg-panel: #141413;
+    --bg-elevated: #30302e;
+    --bg-input: #141413;
+    /* Near Black */
+    --bg-sidebar: #141413;
+    --border-color: #4d4c48;
+    /* Visible against dark surfaces */
+    --border-subtle: #3a3935;
+    /* Subtle separator */
 
     /* Text */
-    --text-main: #d4d4d4;
-    --text-muted: #8e8e8e;
-    --text-placeholder: #4d4d4d;
+    --text-main: #b0aea5;
+    /* Warm Silver */
+    --text-heading: #faf9f5;
+    /* Ivory for headings */
+    --text-muted: #87867f;
+    /* Stone Gray */
+    --text-placeholder: #5e5d59;
+    /* Olive Gray */
 
     /* Accent dim shift for dark */
-    --accent-primary-dim: rgba(240, 101, 36, 0.12);
+    --accent-primary-dim: rgba(201, 100, 66, 0.12);
 
     /* Danger */
-    --accent-danger: #f85149;
-    --accent-danger-hover: #da3633;
+    --accent-danger: #b53333;
+    --accent-danger-hover: #d97757;
+    /* Coral */
+
+    /* Shadows / Rings */
+    --ring-warm: #4d4c48;
+    --ring-subtle: #4d4c48;
+    --ring-deep: #141413;
 
     /* Status */
     --status-online: #3fb950;
-    --status-offline: #5e5e5e;
-    --status-error: #f85149;
+    --status-offline: #5e5d59;
+    /* Olive Gray */
+    --status-error: #b53333;
+    /* Error Crimson */
 
     /* Run/Live */
     --accent-run: #3fb950;
     --accent-run-hover: #2ea043;
 
     /* Terminal */
-    --term-bg: #0d0d0d;
-    --term-text: #d4d4d4;
-    --term-sys: #666666;
-    --term-err: #f85149;
+    --term-bg: #141413;
+    /* Near Black */
+    --term-text: #b0aea5;
+    /* Warm Silver */
+    --term-sys: #87867f;
+    /* Stone Gray */
+    --term-err: #b53333;
+    /* Error Crimson */
 
     /* Plotter (dark) */
-    --plotter-bg: #141414;
-    --plotter-grid: rgba(255, 255, 255, 0.07);
-    --plotter-axis: rgba(255, 255, 255, 0.2);
-    --plotter-label: #8e8e8e;
-    --plotter-crosshair: rgba(255, 255, 255, 0.25);
-    --plotter-tooltip-bg: rgba(20, 20, 20, 0.96);
-    --plotter-tooltip-border: rgba(255, 255, 255, 0.12);
-    --plotter-tooltip-text: #d4d4d4;
-    --plotter-dot-stroke: rgba(20, 20, 20, 0.95);
-    --plotter-toolbar-bg: #1e1e1e;
-    --plotter-toolbar-text: #d4d4d4;
-    --plotter-toolbar-item-text: #a0a0a0;
-    --plotter-toolbar-border: rgba(255, 255, 255, 0.08);
-    --plotter-canvas-wrap-bg: #141414;
+    --plotter-bg: #141413;
+    /* Near Black */
+    --plotter-grid: rgba(250, 249, 245, 0.05);
+    /* Ivory faint */
+    --plotter-axis: rgba(250, 249, 245, 0.15);
+    --plotter-label: #87867f;
+    /* Stone Gray */
+    --plotter-crosshair: rgba(250, 249, 245, 0.25);
+    --plotter-tooltip-bg: rgba(20, 20, 19, 0.96);
+    --plotter-tooltip-border: #30302e;
+    --plotter-tooltip-text: #b0aea5;
+    --plotter-dot-stroke: #141413;
+    --plotter-toolbar-bg: #141413;
+    /* Dark Surface */
+    --plotter-toolbar-text: #b0aea5;
+    /* Warm Silver */
+    --plotter-toolbar-item-text: #87867f;
+    /* Stone Gray */
+    --plotter-toolbar-border: #30302e;
+    --plotter-canvas-wrap-bg: #141413;
 }
 
 /* === ANSI Terminal Colors (both themes) === */
