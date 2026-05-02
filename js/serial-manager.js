@@ -4,8 +4,8 @@ class SerialManager {
   constructor() {
     this.port = null;
     this.reader = null;
-    this.writer = null;
     this.keepReading = false;
+    this.writeQueue = Promise.resolve();
 
     // Setup stats
     this.stats = {
@@ -80,7 +80,6 @@ class SerialManager {
 
     this.port = null;
     this.reader = null;
-    this.writer = null;
 
     this.stats.rx = 0;
     this.stats.tx = 0;
@@ -130,25 +129,8 @@ class SerialManager {
       throw new Error("Port is not connected.");
     }
 
-    if (!this.writer) {
-      this.writer = this.port.writable.getWriter();
-    }
-
-    try {
-      const data = this.encoder.encode(text);
-      await this.writer.write(data);
-
-      this.stats.tx += data.byteLength;
-      this.emitStats();
-    } catch (error) {
-      console.error("Serial write error:", error);
-      this.emit("error", error);
-    } finally {
-      if (this.writer) {
-        this.writer.releaseLock();
-        this.writer = null;
-      }
-    }
+    const data = this.encoder.encode(text);
+    return this.enqueueWrite(data, "Serial write error");
   }
 
   async writeBytes(bytes) {
@@ -156,25 +138,36 @@ class SerialManager {
       throw new Error("Port is not connected.");
     }
 
-    if (!this.writer) {
-      this.writer = this.port.writable.getWriter();
-    }
+    const data = new Uint8Array(bytes);
+    return this.enqueueWrite(data, "Serial write bytes error");
+  }
 
-    try {
-      const data = new Uint8Array(bytes);
-      await this.writer.write(data);
-
-      this.stats.tx += data.byteLength;
-      this.emitStats();
-    } catch (error) {
-      console.error("Serial write bytes error:", error);
-      this.emit("error", error);
-    } finally {
-      if (this.writer) {
-        this.writer.releaseLock();
-        this.writer = null;
+  enqueueWrite(data, errorLabel) {
+    const task = async () => {
+      if (!this.isConnected) {
+        return;
       }
-    }
+
+      let writer;
+      try {
+        writer = this.port.writable.getWriter();
+        await writer.write(data);
+
+        this.stats.tx += data.byteLength;
+        this.emitStats();
+      } catch (error) {
+        console.error(`${errorLabel}:`, error);
+        this.emit("error", error);
+      } finally {
+        if (writer) {
+          writer.releaseLock();
+        }
+      }
+    };
+
+    const queued = this.writeQueue.then(task, task);
+    this.writeQueue = queued.catch(() => {});
+    return queued;
   }
 
   emitStats() {
