@@ -142,7 +142,7 @@ class InputHandler {
     this.transmit(payload);
 
     if (window.Config.get("localEcho")) {
-      window.Terminal.print(payload, "echo");
+      window.Terminal.print(payload, "echo", { timestamp: true });
     }
 
     // Optionally clear input after send. Usually good UX in modern mode.

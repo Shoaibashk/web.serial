@@ -5,6 +5,7 @@ class TerminalRenderer {
     this.container = document.getElementById(containerId);
     this.contentElement = this.container.querySelector(".terminal-content");
     this.buffer = "";
+    this.lineStart = true;
 
     // Limits
     this.maxLines = 5000;
@@ -33,9 +34,10 @@ class TerminalRenderer {
     this.contentElement.innerHTML = "";
     this.buffer = "";
     this.currentStyle = "";
+    this.lineStart = true;
   }
 
-  print(text, type = "normal") {
+  print(text, type = "normal", options = {}) {
     // For system/error/echo messages, render immediately
     if (type !== "normal") {
       this.flushPending(); // Flush any batched text first
@@ -53,12 +55,26 @@ class TerminalRenderer {
             ? "\n[ERROR] "
             : "";
       let suffix = type === "system" || type === "error" ? "\n" : "";
+      const rendered = prefix + text + suffix;
+      const timestampedEcho =
+        type === "echo" &&
+        options.timestamp &&
+        window.Config.get("showTimestamp");
 
       const el = document.createElement("span");
       el.className = className;
-      el.innerText = prefix + text + suffix;
+
+      if (timestampedEcho) {
+        const timestampEl = document.createElement("span");
+        timestampEl.className = "log-timestamp";
+        timestampEl.textContent = this.getTimestamp();
+        el.appendChild(timestampEl);
+      }
+
+      el.appendChild(document.createTextNode(rendered));
       this.contentElement.appendChild(el);
       this.currentStyle = "";
+      this.lineStart = /[\r\n]$/.test(rendered);
       this.trimBuffer();
       this.scrollToBottom();
       return;
@@ -80,8 +96,8 @@ class TerminalRenderer {
   flushPending() {
     if (!this.pendingText) return;
 
-    let formattedText = this.escapeHtml(this.pendingText);
-    const parsedHtml = this.parseAnsi(formattedText);
+    const showTimestamp = window.Config.get("showTimestamp");
+    const parsedHtml = this.renderChunk(this.pendingText, showTimestamp);
 
     const wrapper = document.createElement("span");
     wrapper.innerHTML = parsedHtml;
@@ -93,6 +109,49 @@ class TerminalRenderer {
     this.pendingText = "";
     this.trimBuffer();
     this.scrollToBottom();
+  }
+
+  renderChunk(text, showTimestamp = false) {
+    const linePattern = /(.*?)(\r\n|\r|\n|$)/gs;
+    let result = "";
+    let lineStart = this.lineStart;
+    let match;
+
+    while ((match = linePattern.exec(text)) !== null) {
+      if (!match[0]) break;
+
+      const content = match[1];
+      const lineBreak = match[2];
+
+      if (showTimestamp && lineStart) {
+        result += `<span class="log-timestamp">${this.getTimestamp()}</span>`;
+      }
+
+      if (content) {
+        result += this.parseAnsi(this.escapeHtml(content));
+      }
+
+      if (lineBreak && lineBreak !== "$") {
+        result += this.escapeHtml(lineBreak);
+        lineStart = true;
+      } else {
+        lineStart = false;
+      }
+
+      if (!lineBreak || lineBreak === "$") break;
+    }
+
+    this.lineStart = lineStart;
+    return result;
+  }
+
+  getTimestamp() {
+    const now = new Date();
+    const pad = (value, length = 2) => String(value).padStart(length, "0");
+
+    return `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(
+      now.getSeconds(),
+    )}.${pad(now.getMilliseconds(), 3)} -> `;
   }
 
   deleteLastChar() {

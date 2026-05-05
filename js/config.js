@@ -14,6 +14,7 @@ const DEFAULT_CONFIG = {
   terminalMode: "modern", // 'modern' or 'traditional'
   lineEnding: "\r\n",
   localEcho: true,
+  showTimestamp: false,
   plotterInterpolate: false,
   plotterMaxSamples: 2000,
 

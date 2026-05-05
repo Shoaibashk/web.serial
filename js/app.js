@@ -61,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("lineEnding") ||
       document.getElementById("line-ending"),
     localEcho: document.getElementById("local-echo"),
+    showTimestamp: document.getElementById("show-timestamp"),
 
     // Extra buttons
     btnSendCtrlC: document.getElementById("btn-send-ctrl-c"),
@@ -83,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window.Config.get("lineEnding"),
     );
     ui.localEcho.checked = window.Config.get("localEcho");
+    ui.showTimestamp.checked = window.Config.get("showTimestamp");
 
     // Panels
     const panels = window.Config.get("panels");
@@ -169,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const payload = cmd.value + window.Config.get("lineEnding");
         window.Input.transmit(payload);
         if (window.Config.get("localEcho")) {
-          window.Terminal.print(payload, "echo");
+          window.Terminal.print(payload, "echo", { timestamp: true });
         }
       };
 
@@ -248,6 +250,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   ui.localEcho.addEventListener("change", (e) => {
     window.Config.set("localEcho", e.target.checked);
+  });
+
+  ui.showTimestamp.addEventListener("change", (e) => {
+    window.Config.set("showTimestamp", e.target.checked);
   });
 
   if (ui.btnThemeToggle) {
